@@ -3,17 +3,37 @@ import { useState } from "react";
 import { ActivityIndicator, Image, Modal, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 import { AlertTriangle, Camera, CheckCircle2, ImagePlus, MessageSquare, Send, X } from "lucide-react-native";
 
-import { AnalysisResult, FeedbackReason, createAnalysis, submitFeedback } from "../api/client";
+import {
+  AnalysisFeedbackReason,
+  AnalysisResult,
+  RejectedFeedbackReason,
+  createAnalysis,
+  submitFeedback,
+  submitRejectedFeedback
+} from "../api/client";
 import { PrimaryButton } from "../components/PrimaryButton";
 import { colors } from "../theme/colors";
 
 const photoTips = ["Hoja completa", "Buena luz", "Fondo limpio"];
-const feedbackOptions: Array<{ reason: FeedbackReason; label: string }> = [
+const analysisFeedbackOptions: Array<{ reason: AnalysisFeedbackReason; label: string }> = [
   { reason: "not_leaf", label: "No era una hoja" },
   { reason: "wrong_result", label: "El resultado parece incorrecto" },
   { reason: "poor_image", label: "La imagen era poco clara" },
   { reason: "other", label: "Otro" }
 ];
+const rejectedFeedbackOptions: Array<{ reason: RejectedFeedbackReason; label: string }> = [
+  { reason: "was_leaf", label: "Si era una hoja" },
+  { reason: "related_vegetation", label: "Era vegetacion relacionada" },
+  { reason: "poor_image", label: "La imagen era poco clara" },
+  { reason: "other", label: "Otro" }
+];
+
+type FeedbackMode = "analysis" | "rejection";
+type FeedbackReason = AnalysisFeedbackReason | RejectedFeedbackReason;
+
+function isRejectionError(message: string | null) {
+  return Boolean(message?.toLowerCase().includes("no parece corresponder"));
+}
 
 export function AnalyzeScreen() {
   const [imageUri, setImageUri] = useState<string | null>(null);
@@ -21,6 +41,7 @@ export function AnalyzeScreen() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [feedbackOpen, setFeedbackOpen] = useState(false);
+  const [feedbackMode, setFeedbackMode] = useState<FeedbackMode>("analysis");
   const [feedbackReason, setFeedbackReason] = useState<FeedbackReason>("wrong_result");
   const [feedbackComment, setFeedbackComment] = useState("");
   const [feedbackSending, setFeedbackSending] = useState(false);
@@ -81,21 +102,35 @@ export function AnalyzeScreen() {
     }
   }
 
-  function openFeedback() {
+  function openAnalysisFeedback() {
+    setFeedbackMode("analysis");
     setFeedbackReason("wrong_result");
     setFeedbackComment("");
     setFeedbackMessage(null);
     setFeedbackOpen(true);
   }
 
-  async function sendFeedback() {
-    if (!result) return;
+  function openRejectedFeedback() {
+    setFeedbackMode("rejection");
+    setFeedbackReason("was_leaf");
+    setFeedbackComment("");
+    setFeedbackMessage(null);
+    setFeedbackOpen(true);
+  }
 
+  async function sendFeedback() {
     try {
       setFeedbackSending(true);
-      await submitFeedback(result.id, feedbackReason, feedbackComment);
+      if (feedbackMode === "analysis") {
+        if (!result) return;
+        await submitFeedback(result.id, feedbackReason as AnalysisFeedbackReason, feedbackComment);
+        setFeedbackMessage("Reporte enviado. Gracias por ayudar a mejorar el analisis.");
+      } else {
+        if (!imageUri || !error) return;
+        await submitRejectedFeedback(imageUri, feedbackReason as RejectedFeedbackReason, feedbackComment, error);
+        setFeedbackMessage("Reporte enviado. Revisaremos este rechazo para mejorar el filtro.");
+      }
       setFeedbackOpen(false);
-      setFeedbackMessage("Reporte enviado. Gracias por ayudar a mejorar el analisis.");
     } catch (err) {
       setFeedbackMessage(err instanceof Error ? err.message : "No se pudo enviar el reporte.");
     } finally {
@@ -106,6 +141,11 @@ export function AnalyzeScreen() {
   const confidence = result ? Number(result.confidence) : 0;
   const isLowConfidence = result ? confidence < 70 : false;
   const isPathology = result?.status === "pathology";
+  const feedbackOptions = feedbackMode === "analysis" ? analysisFeedbackOptions : rejectedFeedbackOptions;
+  const modalTitle = feedbackMode === "analysis" ? "Reportar resultado" : "Reportar rechazo";
+  const modalCopy = feedbackMode === "analysis"
+    ? "Ayudanos a mejorar Cacao Leaf indicando que ocurrio con este analisis."
+    : "Ayudanos a revisar este caso si la imagen si correspondia a una hoja o vegetacion.";
 
   return (
     <ScrollView contentContainerStyle={styles.screen}>
@@ -142,6 +182,15 @@ export function AnalyzeScreen() {
 
       {loading ? <ActivityIndicator accessibilityLabel="Procesando imagen" accessibilityRole="progressbar" color={colors.primary} size="large" style={styles.loader} /> : null}
       {error ? <Text accessibilityRole="alert" accessibilityLiveRegion="assertive" style={styles.error}>{error}</Text> : null}
+      {error && isRejectionError(error) ? (
+        <View style={styles.feedbackPrompt}>
+          <Text style={styles.feedbackQuestion}>Crees que este rechazo fue un error?</Text>
+          <Pressable accessibilityRole="button" accessibilityLabel="Reportar rechazo" accessibilityHint="Abre un formulario para enviar una observacion sobre este rechazo." onPress={openRejectedFeedback} style={({ pressed }) => [styles.feedbackButton, pressed && styles.feedbackButtonPressed]}>
+            <MessageSquare size={18} color={colors.primary} accessibilityElementsHidden importantForAccessibility="no" />
+            <Text style={styles.feedbackButtonText}>Reportar rechazo</Text>
+          </Pressable>
+        </View>
+      ) : null}
       {feedbackMessage ? <Text accessibilityRole="status" accessibilityLiveRegion="polite" style={styles.feedbackStatus}>{feedbackMessage}</Text> : null}
 
       {result ? (
@@ -162,8 +211,8 @@ export function AnalyzeScreen() {
           <Text style={styles.recommendation}>{result.recommendation}</Text>
 
           <View style={styles.feedbackPrompt}>
-            <Text style={styles.feedbackQuestion}>¿El resultado no coincide?</Text>
-            <Pressable accessibilityRole="button" accessibilityLabel="Reportar resultado" accessibilityHint="Abre un formulario para enviar una observacion sobre este analisis." onPress={openFeedback} style={({ pressed }) => [styles.feedbackButton, pressed && styles.feedbackButtonPressed]}>
+            <Text style={styles.feedbackQuestion}>El resultado no coincide?</Text>
+            <Pressable accessibilityRole="button" accessibilityLabel="Reportar resultado" accessibilityHint="Abre un formulario para enviar una observacion sobre este analisis." onPress={openAnalysisFeedback} style={({ pressed }) => [styles.feedbackButton, pressed && styles.feedbackButtonPressed]}>
               <MessageSquare size={18} color={colors.primary} accessibilityElementsHidden importantForAccessibility="no" />
               <Text style={styles.feedbackButtonText}>Reportar resultado</Text>
             </Pressable>
@@ -175,15 +224,15 @@ export function AnalyzeScreen() {
         <View style={styles.modalBackdrop}>
           <View accessibilityViewIsModal style={styles.modalCard}>
             <View style={styles.modalHeader}>
-              <Text accessibilityRole="header" style={styles.modalTitle}>Reportar resultado</Text>
+              <Text accessibilityRole="header" style={styles.modalTitle}>{modalTitle}</Text>
               <Pressable accessibilityRole="button" accessibilityLabel="Cerrar reporte" onPress={() => setFeedbackOpen(false)} style={styles.closeButton}>
                 <X size={22} color={colors.text} accessibilityElementsHidden importantForAccessibility="no" />
               </Pressable>
             </View>
 
             <View style={styles.modalContent}>
-              <Text style={styles.copy}>Ayudanos a mejorar Cacao Leaf indicando que ocurrio con este analisis.</Text>
-              <Text style={styles.fieldLabel}>¿Que ocurrio?</Text>
+              <Text style={styles.copy}>{modalCopy}</Text>
+              <Text style={styles.fieldLabel}>Que ocurrio?</Text>
               <View style={styles.reasonList}>
                 {feedbackOptions.map((option) => {
                   const selected = feedbackReason === option.reason;

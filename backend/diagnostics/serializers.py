@@ -2,7 +2,7 @@ from rest_framework import serializers
 from PIL import Image, ImageStat, UnidentifiedImageError
 
 from .classifier import classify_cacao_leaf
-from .models import FeedbackReport, LeafAnalysis
+from .models import FeedbackReport, LeafAnalysis, RejectedImageReport
 
 
 ALLOWED_IMAGE_TYPES = {"image/jpeg", "image/png", "image/webp"}
@@ -98,6 +98,19 @@ class FeedbackReportSerializer(serializers.ModelSerializer):
     def validate_comment(self, value):
         return value.strip()[:500]
 
+class RejectedImageReportSerializer(serializers.ModelSerializer):
+    reason_display = serializers.CharField(source="get_reason_display", read_only=True)
+
+    class Meta:
+        model = RejectedImageReport
+        fields = ["id", "image", "error_message", "reason", "reason_display", "comment", "created_at"]
+        read_only_fields = ["id", "reason_display", "created_at"]
+
+    def validate_comment(self, value):
+        return value.strip()[:500]
+
+    def validate_error_message(self, value):
+        return value.strip()[:500]
 
 def looks_like_vegetation(image: Image.Image) -> bool:
     rgb_image = image.convert("RGB").resize((96, 96))

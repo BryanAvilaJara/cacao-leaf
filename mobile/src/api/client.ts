@@ -47,20 +47,24 @@ async function getErrorMessage(response: Response, fallback: string): Promise<st
   }
 }
 
+function appendImage(formData: FormData, imageUri: string, filename: string): Promise<void> | void {
+  if (Platform.OS === "web") {
+    return fetch(imageUri).then(async (imageResponse) => {
+      const imageBlob = await imageResponse.blob();
+      formData.append("image", imageBlob, filename);
+    });
+  }
+
+  formData.append("image", {
+    uri: imageUri,
+    name: filename,
+    type: "image/jpeg"
+  } as unknown as Blob);
+}
+
 export async function createAnalysis(imageUri: string): Promise<AnalysisResult> {
   const formData = new FormData();
-
-  if (Platform.OS === "web") {
-    const imageResponse = await fetch(imageUri);
-    const imageBlob = await imageResponse.blob();
-    formData.append("image", imageBlob, "cacao-leaf.jpg");
-  } else {
-    formData.append("image", {
-      uri: imageUri,
-      name: "cacao-leaf.jpg",
-      type: "image/jpeg"
-    } as unknown as Blob);
-  }
+  await appendImage(formData, imageUri, "cacao-leaf.jpg");
 
   const response = await fetch(`${API_BASE_URL}/api/analyses/`, {
     method: "POST",
@@ -96,9 +100,11 @@ export async function clearAnalyses(): Promise<void> {
     throw new Error("No se pudo limpiar el historial.");
   }
 }
-export type FeedbackReason = "not_leaf" | "wrong_result" | "poor_image" | "other";
 
-export async function submitFeedback(analysisId: number, reason: FeedbackReason, comment: string): Promise<void> {
+export type AnalysisFeedbackReason = "not_leaf" | "wrong_result" | "poor_image" | "other";
+export type RejectedFeedbackReason = "was_leaf" | "related_vegetation" | "poor_image" | "other";
+
+export async function submitFeedback(analysisId: number, reason: AnalysisFeedbackReason, comment: string): Promise<void> {
   const response = await fetch(`${API_BASE_URL}/api/analyses/${analysisId}/feedback/`, {
     method: "POST",
     headers: {
@@ -106,6 +112,31 @@ export async function submitFeedback(analysisId: number, reason: FeedbackReason,
       "Content-Type": "application/json"
     },
     body: JSON.stringify({ reason, comment })
+  });
+
+  if (!response.ok) {
+    throw new Error("No se pudo enviar el reporte.");
+  }
+}
+
+export async function submitRejectedFeedback(
+  imageUri: string,
+  reason: RejectedFeedbackReason,
+  comment: string,
+  errorMessage: string
+): Promise<void> {
+  const formData = new FormData();
+  await appendImage(formData, imageUri, "rejected-cacao-leaf.jpg");
+  formData.append("reason", reason);
+  formData.append("comment", comment);
+  formData.append("error_message", errorMessage);
+
+  const response = await fetch(`${API_BASE_URL}/api/rejected-feedback/`, {
+    method: "POST",
+    body: formData,
+    headers: {
+      Accept: "application/json"
+    }
   });
 
   if (!response.ok) {

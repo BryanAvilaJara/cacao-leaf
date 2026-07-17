@@ -3,12 +3,21 @@ from rest_framework.decorators import action, api_view
 from rest_framework.response import Response
 
 from .models import LeafAnalysis
-from .serializers import FeedbackReportSerializer, LeafAnalysisSerializer
+from .serializers import FeedbackReportSerializer, LeafAnalysisSerializer, RejectedImageReportSerializer
 
 
 @api_view(["GET"])
 def health_check(_request):
     return Response({"status": "ok", "service": "cacao-leaf-diagnostics"})
+
+
+@api_view(["POST"])
+def rejected_feedback(request):
+    serializer = RejectedImageReportSerializer(data=request.data)
+    serializer.is_valid(raise_exception=True)
+    report = serializer.save()
+    output = RejectedImageReportSerializer(report)
+    return Response(output.data, status=status.HTTP_201_CREATED)
 
 
 class LeafAnalysisViewSet(

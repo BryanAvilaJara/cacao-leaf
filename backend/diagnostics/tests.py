@@ -8,7 +8,7 @@ from PIL import Image
 from rest_framework import status
 from rest_framework.test import APIClient
 
-from .models import FeedbackReport, LeafAnalysis
+from .models import FeedbackReport, LeafAnalysis, RejectedImageReport
 from .classifier import classify_cacao_leaf
 
 
@@ -125,6 +125,24 @@ class LeafAnalysisApiTests(TestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(FeedbackReport.objects.count(), 1)
         self.assertEqual(response.data["reason"], "wrong_result")
+
+    def test_rejected_image_feedback_is_saved(self):
+        response = self.client.post(
+            "/api/rejected-feedback/",
+            {
+                "image": self._poster_like_image_file(),
+                "reason": "was_leaf",
+                "comment": "Era una hoja real, revisar el filtro.",
+                "error_message": "La imagen no parece corresponder a una hoja o vegetacion.",
+            },
+            format="multipart",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(RejectedImageReport.objects.count(), 1)
+        self.assertEqual(response.data["reason"], "was_leaf")
+        self.assertIn("rejected_reports", response.data["image"])
+
     def test_list_analyses_returns_created_items(self):
         with patch("diagnostics.classifier.predict_with_trained_model", return_value=None):
             self.client.post(

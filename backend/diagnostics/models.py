@@ -48,3 +48,29 @@ class FeedbackReport(models.Model):
 
     def __str__(self):
         return f"{self.get_reason_display()} - analysis {self.analysis_id}"
+
+
+class RejectedImageReport(models.Model):
+    REASON_WAS_LEAF = "was_leaf"
+    REASON_RELATED_VEGETATION = "related_vegetation"
+    REASON_POOR_IMAGE = "poor_image"
+    REASON_OTHER = "other"
+
+    REASON_CHOICES = [
+        (REASON_WAS_LEAF, "Si era una hoja"),
+        (REASON_RELATED_VEGETATION, "Era vegetacion relacionada"),
+        (REASON_POOR_IMAGE, "La imagen era poco clara"),
+        (REASON_OTHER, "Otro"),
+    ]
+
+    image = models.ImageField(upload_to="rejected_reports/")
+    error_message = models.TextField()
+    reason = models.CharField(max_length=30, choices=REASON_CHOICES)
+    comment = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return f"{self.get_reason_display()} - rejected image {self.id}"
