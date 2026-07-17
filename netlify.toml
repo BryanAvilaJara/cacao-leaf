@@ -1,4 +1,4 @@
-﻿[build]
+[build]
   base = "mobile"
   command = "npm run build:web"
   publish = "dist"
