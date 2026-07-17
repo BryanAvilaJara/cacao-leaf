@@ -1,4 +1,4 @@
-# Entregable 2 IHC - Cacao Leaf
+# Cacao Leaf
 
 Solucion prototipo basada en el documento `AVILA e INGA (3).pdf`.
 
@@ -52,7 +52,7 @@ Si `py` no esta disponible, instala Python 3.11 o superior y usa `python` en los
 Si el entorno virtual ya existe, puedes entrar directo:
 
 ```powershell
-cd D:\xampp\htdocs\entregable2_IHC\backend
+cd D:\xampp\htdocs\cacao-leaf\backend
 .\.venv\Scripts\Activate.ps1
 python manage.py migrate
 python manage.py runserver 0.0.0.0:8000
@@ -78,7 +78,7 @@ En emulador Android se usa `http://10.0.2.2:8000` por defecto. En web o iOS loca
 Para probar rapido en navegador:
 
 ```powershell
-cd D:\xampp\htdocs\entregable2_IHC\mobile
+cd D:\xampp\htdocs\cacao-leaf\mobile
 $env:EXPO_PUBLIC_API_URL="http://127.0.0.1:8000"
 npm run web
 ```
@@ -88,7 +88,7 @@ npm run web
 Backend:
 
 ```powershell
-cd D:\xampp\htdocs\entregable2_IHC\backend
+cd D:\xampp\htdocs\cacao-leaf\backend
 .\.venv\Scripts\Activate.ps1
 python manage.py test
 ```
@@ -96,7 +96,7 @@ python manage.py test
 Frontend:
 
 ```powershell
-cd D:\xampp\htdocs\entregable2_IHC\mobile
+cd D:\xampp\htdocs\cacao-leaf\mobile
 npm run typecheck
 ```
 
@@ -153,7 +153,7 @@ Modelo entrenado:
 Comandos para repetir el proceso:
 
 ```powershell
-cd D:\xampp\htdocs\entregable2_IHC\backend
+cd D:\xampp\htdocs\cacao-leaf\backend
 .\.venv\Scripts\Activate.ps1
 pip install -r requirements.txt
 python -m diagnostics.ml.prepare_dataset --zip diagnostics\ml\cocoaswolset.zip --max-per-class 800

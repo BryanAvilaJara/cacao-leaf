@@ -1,6 +1,6 @@
 # Informe tecnico de accesibilidad WCAG 2.2 AA
 
-Proyecto evaluado: **Entregable 2 IHC - Cacao Leaf**  
+Proyecto evaluado: **Cacao Leaf**  
 Fecha de evaluacion: **10 de julio de 2026**  
 Base normativa: **WCAG 2.2, nivel AA**  
 Tipo de evaluacion: revision de codigo, contraste calculado y verificacion funcional parcial. Las pruebas con lector de pantalla quedan identificadas como manuales.
