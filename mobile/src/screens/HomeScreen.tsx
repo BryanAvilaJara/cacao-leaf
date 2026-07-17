@@ -1,4 +1,4 @@
-import { ImageBackground, StyleSheet, Text, View } from "react-native";
+import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { Camera } from "lucide-react-native";
 
 import { PrimaryButton } from "../components/PrimaryButton";
@@ -10,17 +10,10 @@ type Props = {
 
 export function HomeScreen({ onStart }: Props) {
   return (
-    <View style={styles.screen}>
-      <ImageBackground
-        accessible={false}
-        source={{
-          uri: "https://www.growables.org/information/TropicalFruit/images/CocoaStarr300.jpg"
-        }}
-        resizeMode="cover"
-        style={styles.hero}
-        imageStyle={styles.heroImage}
-      >
-        <View style={styles.overlay}>
+    <ScrollView style={styles.scroll} contentContainerStyle={styles.screen}>
+      <View style={styles.hero}>
+        <View style={styles.heroPattern} />
+        <View style={styles.heroContent}>
           <Text accessibilityRole="header" style={styles.title}>Cacao Leaf</Text>
           <Text style={styles.subtitle}>
             Analisis preliminar de hojas de cacao desde una foto, con resultado e historial en segundos.
@@ -33,7 +26,7 @@ export function HomeScreen({ onStart }: Props) {
             accessibilityHint="Abre la pantalla para tomar o seleccionar una foto de una hoja de cacao."
           />
         </View>
-      </ImageBackground>
+      </View>
 
       <View style={styles.summary}>
         <Text accessibilityRole="header" style={styles.sectionTitle}>Como usar la app</Text>
@@ -52,40 +45,51 @@ export function HomeScreen({ onStart }: Props) {
           </View>
         </View>
       </View>
-    </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  screen: {
+  scroll: {
     flex: 1,
     backgroundColor: colors.background
   },
+  screen: {
+    backgroundColor: colors.background,
+    paddingBottom: 24
+  },
   hero: {
-    minHeight: 430,
-    justifyContent: "flex-end"
+    minHeight: 330,
+    justifyContent: "flex-end",
+    backgroundColor: colors.primaryDark,
+    overflow: "hidden"
   },
-  heroImage: {
-    opacity: 0.95
+  heroPattern: {
+    position: "absolute",
+    right: -50,
+    top: -40,
+    width: 220,
+    height: 220,
+    borderRadius: 110,
+    backgroundColor: "rgba(223, 241, 231, 0.22)"
   },
-  overlay: {
+  heroContent: {
     padding: 24,
-    paddingTop: 80,
-    backgroundColor: "rgba(10, 18, 12, 0.46)"
+    paddingTop: 56,
+    gap: 10
   },
   title: {
     color: "#ffffff",
-    fontSize: 42,
+    fontSize: 38,
     fontWeight: "800"
   },
   subtitle: {
     color: "#eef4eb",
     fontSize: 17,
-    lineHeight: 25,
-    marginTop: 10
+    lineHeight: 25
   },
   button: {
-    marginTop: 24,
+    marginTop: 12,
     alignSelf: "flex-start"
   },
   summary: {
