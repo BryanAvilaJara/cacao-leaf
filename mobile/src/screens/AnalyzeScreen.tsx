@@ -22,8 +22,8 @@ const analysisFeedbackOptions: Array<{ reason: AnalysisFeedbackReason; label: st
   { reason: "other", label: "Otro" }
 ];
 const rejectedFeedbackOptions: Array<{ reason: RejectedFeedbackReason; label: string }> = [
-  { reason: "was_leaf", label: "Si era una hoja" },
-  { reason: "related_vegetation", label: "Era vegetacion relacionada" },
+  { reason: "was_leaf", label: "Sí era una hoja" },
+  { reason: "related_vegetation", label: "Era vegetación relacionada" },
   { reason: "poor_image", label: "La imagen era poco clara" },
   { reason: "other", label: "Otro" }
 ];
@@ -52,7 +52,7 @@ export function AnalyzeScreen() {
     setFeedbackMessage(null);
     const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (!permission.granted) {
-      setError("Activa el permiso de galeria para seleccionar una imagen.");
+      setError("Activa el permiso de galería para seleccionar una imagen.");
       return;
     }
 
@@ -72,7 +72,7 @@ export function AnalyzeScreen() {
     setFeedbackMessage(null);
     const permission = await ImagePicker.requestCameraPermissionsAsync();
     if (!permission.granted) {
-      setError("Activa el permiso de camara para tomar una foto.");
+      setError("Activa el permiso de cámara para tomar una foto.");
       return;
     }
 
@@ -124,7 +124,7 @@ export function AnalyzeScreen() {
       if (feedbackMode === "analysis") {
         if (!result) return;
         await submitFeedback(result.id, feedbackReason as AnalysisFeedbackReason, feedbackComment);
-        setFeedbackMessage("Reporte enviado. Gracias por ayudar a mejorar el analisis.");
+        setFeedbackMessage("Reporte enviado. Gracias por ayudar a mejorar el análisis.");
       } else {
         if (!imageUri || !error) return;
         await submitRejectedFeedback(imageUri, feedbackReason as RejectedFeedbackReason, feedbackComment, error);
@@ -144,15 +144,15 @@ export function AnalyzeScreen() {
   const feedbackOptions = feedbackMode === "analysis" ? analysisFeedbackOptions : rejectedFeedbackOptions;
   const modalTitle = feedbackMode === "analysis" ? "Reportar resultado" : "Reportar rechazo";
   const modalCopy = feedbackMode === "analysis"
-    ? "Ayudanos a mejorar Cacao Leaf indicando que ocurrio con este analisis."
-    : "Ayudanos a revisar este caso si la imagen si correspondia a una hoja o vegetacion.";
+    ? "Ayúdanos a mejorar Cacao Leaf indicando qué ocurrió con este análisis."
+    : "Ayúdanos a revisar este caso si la imagen sí correspondía a una hoja o vegetación.";
 
   return (
     <ScrollView contentContainerStyle={styles.screen}>
-      <Text accessibilityRole="header" style={styles.title}>Analisis de hoja</Text>
+      <Text accessibilityRole="header" style={styles.title}>Análisis de hoja</Text>
       <Text style={styles.copy}>
         Selecciona una foto clara de una hoja de cacao. El resultado es preliminar y no reemplaza
-        la revision de un especialista agricola.
+        la revisión de un especialista agrícola.
       </Text>
 
       <View style={styles.tips}>
@@ -174,18 +174,23 @@ export function AnalyzeScreen() {
 
       <View style={styles.actions}>
         <View style={styles.sourceActions}>
-          <PrimaryButton label="Camara" icon={Camera} onPress={takePhoto} style={styles.sourceButton} accessibilityLabel="Tomar foto con la camara" accessibilityHint="Solicita permiso de camara y abre la camara del dispositivo." />
-          <PrimaryButton label="Galeria" icon={ImagePlus} onPress={pickImage} variant="secondary" style={styles.sourceButton} accessibilityLabel="Seleccionar imagen desde la galeria" accessibilityHint="Solicita permiso de galeria y permite elegir una imagen existente." />
+          <PrimaryButton label="Cámara" icon={Camera} onPress={takePhoto} style={styles.sourceButton} accessibilityLabel="Tomar foto con la cámara" accessibilityHint="Solicita permiso de cámara y abre la cámara del dispositivo." />
+          <PrimaryButton label="Galería" icon={ImagePlus} onPress={pickImage} variant="secondary" style={styles.sourceButton} accessibilityLabel="Seleccionar imagen desde la galería" accessibilityHint="Solicita permiso de galería y permite elegir una imagen existente." />
         </View>
-        <PrimaryButton label={loading ? "Procesando..." : "Procesar imagen"} icon={Send} onPress={analyze} disabled={!imageUri || loading} accessibilityLabel="Procesar imagen seleccionada" accessibilityHint="Envia la imagen al servidor para obtener una clasificacion preliminar." />
+        <PrimaryButton label={loading ? "Analizando..." : "Analizar imagen"} icon={Send} onPress={analyze} disabled={!imageUri || loading} accessibilityLabel="Analizar imagen seleccionada" accessibilityHint="Envía la imagen al servidor para obtener una clasificación preliminar." />
       </View>
 
-      {loading ? <ActivityIndicator accessibilityLabel="Procesando imagen" accessibilityRole="progressbar" color={colors.primary} size="large" style={styles.loader} /> : null}
+      {loading ? (
+        <View style={styles.loadingState}>
+          <ActivityIndicator accessibilityLabel="Analizando imagen" accessibilityRole="progressbar" color={colors.primary} size="large" />
+          <Text accessibilityLiveRegion="polite" style={styles.loadingText}>Analizando imagen. Si el servicio estuvo inactivo, puede tardar unos segundos.</Text>
+        </View>
+      ) : null}
       {error ? <Text accessibilityRole="alert" accessibilityLiveRegion="assertive" style={styles.error}>{error}</Text> : null}
       {error && isRejectionError(error) ? (
         <View style={styles.feedbackPrompt}>
-          <Text style={styles.feedbackQuestion}>Crees que este rechazo fue un error?</Text>
-          <Pressable accessibilityRole="button" accessibilityLabel="Reportar rechazo" accessibilityHint="Abre un formulario para enviar una observacion sobre este rechazo." onPress={openRejectedFeedback} style={({ pressed }) => [styles.feedbackButton, pressed && styles.feedbackButtonPressed]}>
+          <Text style={styles.feedbackQuestion}>¿Crees que este rechazo fue un error?</Text>
+          <Pressable accessibilityRole="button" accessibilityLabel="Reportar rechazo" accessibilityHint="Abre un formulario para enviar una observación sobre este rechazo." onPress={openRejectedFeedback} style={({ pressed }) => [styles.feedbackButton, pressed && styles.feedbackButtonPressed]}>
             <MessageSquare size={18} color={colors.primary} accessibilityElementsHidden importantForAccessibility="no" />
             <Text style={styles.feedbackButtonText}>Reportar rechazo</Text>
           </Pressable>
@@ -206,13 +211,13 @@ export function AnalyzeScreen() {
             <View style={[styles.confidenceFill, { width: `${Math.max(4, Math.min(100, confidence))}%` }]} />
           </View>
           <Text style={styles.confidence}>{Number(result.confidence).toFixed(2)}% de confianza</Text>
-          {isLowConfidence ? <Text style={styles.warning}>Confianza baja: repite la foto con mejor iluminacion o valida con un especialista.</Text> : null}
+          {isLowConfidence ? <Text style={styles.warning}>Confianza baja: repite la foto con mejor iluminación o valida con un especialista.</Text> : null}
           <Text style={styles.notes}>{result.notes}</Text>
           <Text style={styles.recommendation}>{result.recommendation}</Text>
 
           <View style={styles.feedbackPrompt}>
-            <Text style={styles.feedbackQuestion}>El resultado no coincide?</Text>
-            <Pressable accessibilityRole="button" accessibilityLabel="Reportar resultado" accessibilityHint="Abre un formulario para enviar una observacion sobre este analisis." onPress={openAnalysisFeedback} style={({ pressed }) => [styles.feedbackButton, pressed && styles.feedbackButtonPressed]}>
+            <Text style={styles.feedbackQuestion}>¿El resultado no coincide?</Text>
+            <Pressable accessibilityRole="button" accessibilityLabel="Reportar resultado" accessibilityHint="Abre un formulario para enviar una observación sobre este análisis." onPress={openAnalysisFeedback} style={({ pressed }) => [styles.feedbackButton, pressed && styles.feedbackButtonPressed]}>
               <MessageSquare size={18} color={colors.primary} accessibilityElementsHidden importantForAccessibility="no" />
               <Text style={styles.feedbackButtonText}>Reportar resultado</Text>
             </Pressable>
@@ -232,7 +237,7 @@ export function AnalyzeScreen() {
 
             <View style={styles.modalContent}>
               <Text style={styles.copy}>{modalCopy}</Text>
-              <Text style={styles.fieldLabel}>Que ocurrio?</Text>
+              <Text style={styles.fieldLabel}>¿Qué ocurrió?</Text>
               <View style={styles.reasonList}>
                 {feedbackOptions.map((option) => {
                   const selected = feedbackReason === option.reason;
@@ -244,7 +249,7 @@ export function AnalyzeScreen() {
                 })}
               </View>
               <Text style={styles.fieldLabel}>Comentario opcional</Text>
-              <TextInput value={feedbackComment} onChangeText={setFeedbackComment} multiline maxLength={500} placeholder="Escribe una observacion breve" placeholderTextColor={colors.textMuted} style={styles.commentInput} />
+              <TextInput value={feedbackComment} onChangeText={setFeedbackComment} multiline maxLength={500} placeholder="Escribe una observación breve" placeholderTextColor={colors.textMuted} style={styles.commentInput} />
               <View style={styles.modalActions}>
                 <PrimaryButton label="Cancelar" onPress={() => setFeedbackOpen(false)} disabled={feedbackSending} variant="secondary" style={styles.modalButton} />
                 <PrimaryButton label={feedbackSending ? "Enviando..." : "Enviar reporte"} onPress={sendFeedback} disabled={feedbackSending} style={styles.modalButton} />
@@ -270,7 +275,8 @@ const styles = StyleSheet.create({
   actions: { gap: 12 },
   sourceActions: { flexDirection: "row", gap: 12 },
   sourceButton: { flex: 1 },
-  loader: { marginTop: 8 },
+  loadingState: { marginTop: 8, gap: 8, alignItems: "center" },
+  loadingText: { color: colors.textMuted, fontSize: 14, fontWeight: "700", textAlign: "center", lineHeight: 20 },
   error: { color: colors.danger, fontSize: 14, fontWeight: "700" },
   feedbackStatus: { color: colors.primary, fontSize: 14, fontWeight: "800", lineHeight: 20 },
   result: { borderRadius: 8, backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.border, padding: 18, gap: 10 },

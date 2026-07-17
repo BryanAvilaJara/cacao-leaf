@@ -16,7 +16,7 @@ export function HomeScreen({ onStart }: Props) {
         <View style={styles.heroContent}>
           <Text accessibilityRole="header" style={styles.title}>Cacao Leaf</Text>
           <Text style={styles.subtitle}>
-            Analisis preliminar de hojas de cacao desde una foto, con resultado e historial en segundos.
+            Análisis preliminar de hojas de cacao desde una foto, con resultado e historial en segundos.
           </Text>
           <PrimaryButton
             label="Analizar hoja"
@@ -29,19 +29,19 @@ export function HomeScreen({ onStart }: Props) {
       </View>
 
       <View style={styles.summary}>
-        <Text accessibilityRole="header" style={styles.sectionTitle}>Como usar la app</Text>
+        <Text accessibilityRole="header" style={styles.sectionTitle}>Cómo usar la app</Text>
         <View style={styles.metrics}>
           <View accessible accessibilityLabel="Paso 1. Captura o selecciona una hoja clara." style={styles.metric}>
             <Text style={styles.metricNumber}>1</Text>
             <Text style={styles.metricText}>Captura o selecciona una hoja clara.</Text>
           </View>
-          <View accessible accessibilityLabel="Paso 2. La app procesa la imagen." style={styles.metric}>
+          <View accessible accessibilityLabel="Paso 2. La app analiza la imagen." style={styles.metric}>
             <Text style={styles.metricNumber}>2</Text>
-            <Text style={styles.metricText}>La app procesa la imagen.</Text>
+            <Text style={styles.metricText}>La app analiza la imagen.</Text>
           </View>
-          <View accessible accessibilityLabel="Paso 3. Revisa confianza, notas e historial." style={styles.metric}>
+          <View accessible accessibilityLabel="Paso 3. Revisa confianza, recomendaciones e historial." style={styles.metric}>
             <Text style={styles.metricNumber}>3</Text>
-            <Text style={styles.metricText}>Revisa confianza, notas e historial.</Text>
+            <Text style={styles.metricText}>Revisa confianza, recomendaciones e historial.</Text>
           </View>
         </View>
       </View>

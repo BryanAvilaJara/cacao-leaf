@@ -66,6 +66,10 @@ export function HistoryScreen() {
     );
   }, [analyses, rejectedReports]);
 
+  const reportedCount = analyses.filter((item) => item.feedback_count > 0).length;
+  const rejectedCount = rejectedReports.length;
+  const totalCount = entries.length;
+
   const filteredEntries = useMemo(() => {
     if (filter === "reported") {
       return entries.filter((entry) => entry.kind === "analysis" && entry.item.feedback_count > 0);
@@ -119,7 +123,7 @@ export function HistoryScreen() {
       setFeedbackSending(true);
       await submitFeedback(selectedEntry.item.id, feedbackReason, feedbackComment);
       setFeedbackOpen(false);
-      setStatusMessage("Reporte guardado. Este analisis queda marcado para revision.");
+      setStatusMessage("Reporte guardado. Este análisis queda marcado para revisión.");
       await load();
     } catch (err) {
       setStatusMessage(err instanceof Error ? err.message : "No se pudo enviar el reporte.");
@@ -137,14 +141,15 @@ export function HistoryScreen() {
       }}
     >
       <Text accessibilityRole="header" style={styles.title}>Historial</Text>
-      <Text style={styles.copy}>Revisa analisis, reportes y casos observados para seguimiento o mejora futura.</Text>
+      <Text style={styles.copy}>Revisa análisis, reportes y casos observados para seguimiento o mejora futura.</Text>
 
       <View style={styles.filters} accessibilityRole="tablist">
         {filters.map((option) => {
           const selected = filter === option.value;
+          const count = option.value === "all" ? totalCount : option.value === "reported" ? reportedCount : rejectedCount;
           return (
             <Pressable key={option.value} accessibilityRole="tab" accessibilityState={{ selected }} onPress={() => setFilter(option.value)} style={[styles.filterButton, selected && styles.filterButtonActive]}>
-              <Text style={[styles.filterText, selected && styles.filterTextActive]}>{option.label}</Text>
+              <Text style={[styles.filterText, selected && styles.filterTextActive]}>{`${option.label} (${count})`}</Text>
             </Pressable>
           );
         })}
@@ -152,12 +157,12 @@ export function HistoryScreen() {
 
       {entries.length ? (
         <PrimaryButton
-          label={clearing ? "Limpiando..." : "Limpiar analisis"}
+          label={clearing ? "Limpiando..." : "Limpiar análisis"}
           icon={Trash2}
           onPress={() => setConfirmClear(true)}
           disabled={clearing}
           variant="secondary"
-          accessibilityHint="Abre una confirmacion antes de eliminar los analisis guardados. Los reportes se conservan."
+          accessibilityHint="Abre una confirmación antes de eliminar los análisis guardados. Los reportes se conservan."
         />
       ) : null}
 
@@ -166,7 +171,7 @@ export function HistoryScreen() {
       ) : null}
       {error ? <Text accessibilityRole="alert" accessibilityLiveRegion="assertive" style={styles.error}>{error}</Text> : null}
       {statusMessage ? <Text accessibilityRole="status" accessibilityLiveRegion="polite" style={styles.feedbackStatus}>{statusMessage}</Text> : null}
-      {!loading && !filteredEntries.length && !error ? <Text style={styles.empty}>No hay registros para este filtro.</Text> : null}
+      {!loading && !filteredEntries.length && !error ? <Text style={styles.empty}>No hay registros para este filtro. Procesa una hoja o reporta un caso para iniciar la trazabilidad.</Text> : null}
 
       {filteredEntries.map((entry) => (
         <HistoryRow key={entry.id} entry={entry} onPress={() => setSelectedEntry(entry)} />
@@ -176,7 +181,7 @@ export function HistoryScreen() {
         <View style={styles.modalBackdrop}>
           <View accessibilityViewIsModal style={styles.modalCard}>
             <View style={styles.modalHeader}>
-              <Text accessibilityRole="header" style={styles.modalTitle}>{selectedEntry?.kind === "rejected" ? "Detalle del rechazo" : "Detalle del analisis"}</Text>
+              <Text accessibilityRole="header" style={styles.modalTitle}>{selectedEntry?.kind === "rejected" ? "Detalle del rechazo" : "Detalle del análisis"}</Text>
               <Pressable accessibilityRole="button" accessibilityLabel="Cerrar detalle" onPress={() => setSelectedEntry(null)} style={styles.closeButton}>
                 <X size={22} color={colors.text} accessibilityElementsHidden importantForAccessibility="no" />
               </Pressable>
@@ -205,8 +210,8 @@ export function HistoryScreen() {
                 <X size={22} color={colors.text} accessibilityElementsHidden importantForAccessibility="no" />
               </Pressable>
             </View>
-            <Text style={styles.detailText}>Marca este analisis como observado para revisarlo despues o usarlo como evidencia de mejora.</Text>
-            <Text style={styles.detailLabel}>Que ocurrio?</Text>
+            <Text style={styles.detailText}>Marca este análisis como observado para revisarlo después o usarlo como evidencia de mejora.</Text>
+            <Text style={styles.detailLabel}>¿Qué ocurrió?</Text>
             <View style={styles.reasonList}>
               {feedbackOptions.map((option) => {
                 const selected = feedbackReason === option.reason;
@@ -218,7 +223,7 @@ export function HistoryScreen() {
               })}
             </View>
             <Text style={styles.detailLabel}>Comentario opcional</Text>
-            <TextInput value={feedbackComment} onChangeText={setFeedbackComment} multiline maxLength={500} placeholder="Escribe una observacion breve" placeholderTextColor={colors.textMuted} style={styles.commentInput} />
+            <TextInput value={feedbackComment} onChangeText={setFeedbackComment} multiline maxLength={500} placeholder="Escribe una observación breve" placeholderTextColor={colors.textMuted} style={styles.commentInput} />
             <View style={styles.confirmActions}>
               <PrimaryButton label="Cancelar" onPress={() => setFeedbackOpen(false)} disabled={feedbackSending} variant="secondary" style={styles.confirmButton} />
               <PrimaryButton label={feedbackSending ? "Enviando..." : "Guardar reporte"} onPress={sendFeedback} disabled={feedbackSending} style={styles.confirmButton} />
@@ -230,8 +235,8 @@ export function HistoryScreen() {
       <Modal visible={confirmClear} transparent animationType="fade" onRequestClose={() => setConfirmClear(false)}>
         <View style={styles.modalBackdrop}>
           <View accessibilityViewIsModal style={styles.confirmCard}>
-            <Text accessibilityRole="header" style={styles.modalTitle}>Limpiar analisis</Text>
-            <Text style={styles.detailText}>Se eliminaran los analisis guardados. Los reportes de rechazo se conservan para revision.</Text>
+            <Text accessibilityRole="header" style={styles.modalTitle}>Limpiar análisis</Text>
+            <Text style={styles.detailText}>Se eliminarán los análisis guardados. Los reportes de rechazo se conservan para revisión.</Text>
             <View style={styles.confirmActions}>
               <PrimaryButton label="Cancelar" onPress={() => setConfirmClear(false)} disabled={clearing} variant="secondary" style={styles.confirmButton} />
               <PrimaryButton label={clearing ? "Limpiando..." : "Limpiar"} icon={Trash2} onPress={clearHistory} disabled={clearing} style={styles.confirmButton} accessibilityLabel="Confirmar limpieza del historial" />
@@ -258,7 +263,7 @@ function HistoryRow({ entry, onPress }: { entry: HistoryEntry; onPress: () => vo
           <Text style={[styles.status, isRejected && styles.statusWarning, analysis?.status === "pathology" && styles.statusDanger]}>{isRejected ? "Rechazo reportado" : analysis?.status_display}</Text>
         </View>
         <Text style={styles.disease}>{isRejected ? rejected?.reason_display : analysis?.disease_label}</Text>
-        <Text style={styles.meta}>{isRejected ? "Imagen enviada para revision" : `${Number(analysis?.confidence || 0).toFixed(2)}% confianza`}</Text>
+        <Text style={styles.meta}>{isRejected ? "Imagen enviada para revisión" : `${Number(analysis?.confidence || 0).toFixed(2)}% confianza`}</Text>
         <Text style={styles.meta}>{new Date(entry.date).toLocaleString()}</Text>
         <View style={styles.badgeLine}>
           {reported ? <Text style={styles.reportBadge}>Reportado</Text> : null}
@@ -286,10 +291,10 @@ function AnalysisDetail({ entry, onReport }: { entry: Extract<HistoryEntry, { ki
       <DetailBlock label="Resultado" value={item.disease_label} />
       <DetailBlock label="Confianza" value={`${Number(item.confidence).toFixed(2)}%`} />
       <DetailBlock label="Fecha" value={new Date(item.created_at).toLocaleString()} />
-      <DetailBlock label="Observacion" value={item.notes} />
-      <DetailBlock label="Recomendacion" value={item.recommendation} />
-      {item.feedback_count > 0 ? <DetailBlock label="Ultimo reporte" value={`${item.latest_feedback_reason_display}${item.latest_feedback_comment ? `: ${item.latest_feedback_comment}` : ""}`} /> : null}
-      <PrimaryButton label="Reportar resultado" icon={MessageSquare} onPress={onReport} variant={item.feedback_count > 0 ? "secondary" : "primary"} accessibilityHint="Marca este analisis como observado para revision futura." />
+      <DetailBlock label="Observación" value={item.notes} />
+      <DetailBlock label="Recomendación" value={item.recommendation} />
+      {item.feedback_count > 0 ? <DetailBlock label="Último reporte" value={`${item.latest_feedback_reason_display}${item.latest_feedback_comment ? `: ${item.latest_feedback_comment}` : ""}`} /> : null}
+      <PrimaryButton label="Reportar resultado" icon={MessageSquare} onPress={onReport} variant={item.feedback_count > 0 ? "secondary" : "primary"} accessibilityHint="Marca este análisis como observado para revisión futura." />
     </>
   );
 }
@@ -330,7 +335,7 @@ const styles = StyleSheet.create({
   filterTextActive: { color: colors.primary },
   error: { color: colors.danger, fontWeight: "700" },
   feedbackStatus: { color: colors.primary, fontSize: 14, fontWeight: "800", lineHeight: 20 },
-  empty: { color: colors.textMuted, fontWeight: "700" },
+  empty: { color: colors.textMuted, fontWeight: "700", lineHeight: 21 },
   row: { minHeight: 104, borderRadius: 8, backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.border, padding: 10, flexDirection: "row", gap: 12, alignItems: "center" },
   rowPressed: { backgroundColor: colors.surfaceMuted },
   thumb: { width: 76, height: 76, borderRadius: 8, backgroundColor: colors.surfaceMuted },
