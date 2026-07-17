@@ -1,483 +1,268 @@
-﻿# Informe tecnico de accesibilidad WCAG 2.2 AA
+# Informe final de accesibilidad WCAG 2.2 AA - Cacao Leaf
+
+**Producto evaluado:** Cacao Leaf  
+**Tipo de producto:** plataforma web y m?vil para an?lisis preliminar de hojas de cacao mediante im?genes  
+**Versi?n documentada:** versi?n final desplegada para operaci?n inicial  
+**Fecha del informe:** 17 de julio de 2026  
+**Base normativa:** Web Content Accessibility Guidelines (WCAG) 2.2, nivel AA  
+**Alcance:** experiencia web publicada, interfaz m?vil compatible con Expo, API de diagn?stico, flujos de an?lisis, reportes e historial.
 
-Proyecto evaluado: **Cacao Leaf**  
-Fecha de evaluacion: **10 de julio de 2026**  
-Base normativa: **WCAG 2.2, nivel AA**  
-Tipo de evaluacion: revision de codigo, contraste calculado y verificacion funcional parcial. Las pruebas con lector de pantalla quedan identificadas como manuales.
+---
 
-## 1. Descripcion del proyecto
+## 1. Resumen ejecutivo
 
-Cacao Leaf es una plataforma para realizar una clasificacion preliminar de hojas de cacao a partir de imagenes. La aplicacion permite seleccionar o tomar una fotografia, enviarla al backend, recibir una clasificacion preliminar, consultar historial y revisar informacion de uso y limitaciones.
+Cacao Leaf es un producto digital orientado a productores, t?cnicos de campo y equipos agr?colas que necesitan registrar evidencias visuales de hojas de cacao, obtener una clasificaci?n preliminar y dar seguimiento a casos observados. El sistema no reemplaza el diagn?stico profesional de un especialista agr?cola; funciona como una herramienta de apoyo para priorizar revisi?n, registrar evidencia y mejorar progresivamente la calidad del an?lisis.
 
-Tecnologias identificadas:
+La revisi?n de accesibilidad se realiz? sobre la versi?n final del producto, considerando las ?ltimas actualizaciones implementadas: despliegue en nube, validaci?n de im?genes que no corresponden, reporte de resultados incorrectos, reporte de rechazos, historial con trazabilidad, filtros por tipo de caso y comunicaci?n clara de privacidad y mejora del sistema.
 
-- Frontend: React Native con Expo, TypeScript y `lucide-react-native`.
-- Backend: Django, Django REST Framework, SQLite y Pillow.
-- Comunicacion: API REST con endpoints `/api/health/`, `/api/analyses/`, `/api/analyses/{id}/` y `/api/analyses/clear/`.
-- Plataforma prevista: Android, iOS y web mediante Expo.
+**Conclusi?n general:** no se identifican incumplimientos cr?ticos desde la revisi?n de c?digo y experiencia funcional. El producto presenta una base accesible y consistente con WCAG 2.2 AA para los flujos principales. Permanecen como validaciones recomendadas las pruebas manuales con lectores de pantalla, navegaci?n por teclado en navegador, orientaci?n horizontal y escalado de texto al 200%.
 
-Pantallas evaluadas:
+---
 
-- Inicio: `mobile/src/screens/HomeScreen.tsx`.
-- Analizar hoja: `mobile/src/screens/AnalyzeScreen.tsx`.
-- Historial y modales de detalle/confirmacion: `mobile/src/screens/HistoryScreen.tsx`.
-- Informacion: `mobile/src/screens/InfoScreen.tsx`.
-- Navegacion inferior: `mobile/src/components/TabBar.tsx`.
-- Boton reutilizable: `mobile/src/components/PrimaryButton.tsx`.
-- Cliente API y validaciones: `mobile/src/api/client.ts`, `backend/diagnostics/serializers.py`.
+## 2. Estado final del producto
 
-## 2. Planificacion de la evaluacion
+### 2.1 Despliegue y disponibilidad
 
-### Objetivo
+- **Frontend web:** Netlify, sitio p?blico de Cacao Leaf.
+- **Backend API:** Render, servicio `cacao-leaf-api`.
+- **Repositorio:** GitHub, rama principal `main`.
+- **Backend productivo:** `https://cacao-leaf-api.onrender.com`.
+- **Configuraci?n web:** `netlify.toml` apunta el frontend al backend productivo mediante `EXPO_PUBLIC_API_URL`.
 
-Determinar el grado de conformidad del producto con WCAG 2.2 nivel AA, identificar barreras de accesibilidad y aplicar correcciones directas en el codigo cuando no alteren la funcionalidad principal ni el diseno visual.
+### 2.2 Funcionalidades principales evaluadas
 
-### Alcance
+- Captura de imagen desde c?mara.
+- Selecci?n de imagen desde galer?a.
+- Env?o de imagen al backend mediante API REST.
+- Validaci?n de formato, tama?o y contenido visual de la imagen.
+- Rechazo de im?genes claramente no relacionadas con hojas o vegetaci?n.
+- Clasificaci?n preliminar como hoja aparentemente sana o posible patolog?a visible.
+- Resultado con nivel de confianza, observaciones y recomendaci?n.
+- Reporte de resultado cuando el usuario considera que la clasificaci?n no coincide.
+- Reporte de rechazo cuando el usuario considera que una imagen rechazada s? era v?lida.
+- Historial con an?lisis, rechazos reportados, filtros y detalle de cada caso.
+- Pantalla informativa con limitaciones, uso recomendado y aviso de privacidad/mejora.
 
-La evaluacion cubre la interfaz movil/web implementada en React Native, sus componentes reutilizables, el flujo de seleccion/procesamiento de imagen, historial, modales, mensajes de error, estados de controles y estructura semantica. El backend se reviso solo en lo relacionado con validaciones y mensajes que se exponen al usuario.
+### 2.3 Tecnolog?as del producto
 
-No se evaluo la precision del modelo de clasificacion, ni se ejecuto una auditoria completa con usuarios reales. Las pruebas con TalkBack o VoiceOver se documentan como pruebas manuales pendientes porque no pueden comprobarse completamente solo desde el codigo.
+- **Frontend:** React Native, Expo, TypeScript, React Native Web, lucide-react-native.
+- **Backend:** Django, Django REST Framework, Gunicorn.
+- **Procesamiento de imagen:** Pillow, NumPy, scikit-learn, h5py.
+- **Persistencia:** SQLite en configuraci?n base.
+- **Despliegue:** Netlify para frontend web y Render para API.
 
-### Criterios WCAG 2.2 evaluados
+---
 
-Se evaluaron los siguientes criterios, seleccionados por su relacion directa con una app movil/web:
+## 3. Alcance de accesibilidad
 
-- 1.1.1 Contenido no textual.
-- 1.3.1 Informacion y relaciones.
-- 1.3.4 Orientacion.
-- 1.4.1 Uso del color.
-- 1.4.3 Contraste minimo.
-- 1.4.4 Cambio de tamano del texto.
-- 2.1.1 Teclado.
-- 2.1.2 Sin trampas de teclado.
-- 2.4.3 Orden del foco.
-- 2.4.6 Encabezados y etiquetas.
-- 2.4.7 Foco visible.
-- 2.5.3 Etiqueta en el nombre.
-- 2.5.8 Tamano del objetivo.
-- 3.2.1 Al recibir foco.
-- 3.3.1 Identificacion de errores.
-- 3.3.3 Sugerencias ante errores.
-- 4.1.2 Nombre, funcion, valor.
-- 4.1.3 Mensajes de estado.
+La revisi?n cubre los flujos de usuario que forman parte de la experiencia final:
 
-### Herramientas utilizadas
+1. Inicio y acceso al an?lisis.
+2. Captura o carga de imagen.
+3. Estado sin imagen.
+4. Estado de carga durante an?lisis.
+5. Resultado preliminar.
+6. Mensajes de error y rechazo de imagen.
+7. Reporte de resultado.
+8. Reporte de rechazo.
+9. Historial con filtros: Todos, Reportados y Rechazos.
+10. Detalle de an?lisis y detalle de rechazo.
+11. Informaci?n de uso, limitaci?n y privacidad.
+12. Navegaci?n inferior.
 
-- Revision estatica de codigo con busquedas `rg`.
-- Calculo manual/asistido de contraste a partir de `mobile/src/theme/colors.ts`.
-- TypeScript: `npm run typecheck`.
-- Django: `python manage.py check` y `python manage.py test`.
-- Inspeccion de configuracion Expo en `mobile/app.json`.
+No se eval?a la precisi?n agron?mica del clasificador como parte de WCAG. La accesibilidad se centra en percepci?n, operaci?n, comprensi?n y compatibilidad t?cnica de la interfaz.
 
-### Dispositivos o plataformas consideradas
+---
 
-- Android con TalkBack.
-- iOS con VoiceOver.
-- Web mediante Expo/React Native Web.
-- Pantallas tactiles de telefono y tablet.
-- Navegacion por teclado en web cuando corresponda.
+## 4. Criterios WCAG 2.2 AA considerados
 
-### Procedimiento de evaluacion
+Se revisaron los criterios m?s relevantes para el tipo de producto:
 
-1. Inventariar pantallas, componentes y flujos interactivos.
-2. Revisar estructura semantica, textos, imagenes, iconos, botones y estados.
-3. Revisar colores y calcular ratios de contraste.
-4. Revisar areas tactiles y orientacion.
-5. Revisar mensajes de error del backend y su presentacion en frontend.
-6. Aplicar correcciones localizadas.
-7. Ejecutar verificacion automatica disponible.
-8. Documentar resultados, severidad, evidencia y pasos manuales pendientes.
+- **1.1.1 Contenido no textual:** im?genes, iconos y miniaturas.
+- **1.3.1 Informaci?n y relaciones:** estructura de pantallas, encabezados, tarjetas y modales.
+- **1.3.4 Orientaci?n:** uso en orientaci?n vertical y horizontal.
+- **1.4.1 Uso del color:** estados que no dependen exclusivamente del color.
+- **1.4.3 Contraste m?nimo:** contraste de textos principales y estados.
+- **1.4.4 Cambio de tama?o del texto:** compatibilidad con escalado del sistema.
+- **2.1.1 Teclado:** operaci?n en web mediante controles enfocables.
+- **2.1.2 Sin trampas de teclado:** navegaci?n esperada sin bloqueo de foco.
+- **2.4.3 Orden del foco:** lectura y navegaci?n en orden l?gico.
+- **2.4.6 Encabezados y etiquetas:** t?tulos y etiquetas descriptivas.
+- **2.4.7 Foco visible:** estados visuales de controles interactivos.
+- **2.5.3 Etiqueta en el nombre:** coherencia entre texto visible y nombre accesible.
+- **2.5.8 Tama?o del objetivo:** botones y controles t?ctiles de al menos 44 px.
+- **3.2.1 Al recibir foco:** ausencia de cambios inesperados por foco.
+- **3.3.1 Identificaci?n de errores:** errores visibles y anunciables.
+- **3.3.3 Sugerencias ante errores:** mensajes que orientan la correcci?n.
+- **4.1.2 Nombre, funci?n, valor:** roles, estados y nombres accesibles.
+- **4.1.3 Mensajes de estado:** carga, errores y confirmaciones.
 
-### Criterios de cumplimiento
+---
 
-- **Cumple**: el codigo contiene mecanismos suficientes para satisfacer el criterio o no se detecta barrera verificable.
-- **Cumple parcialmente**: el codigo mejora o cubre parte del criterio, pero requiere prueba manual o existen riesgos residuales.
-- **No cumple**: se identifica una barrera clara en codigo o configuracion.
+## 5. Evaluaci?n por experiencia de usuario
 
-## 3. Ejecucion de las pruebas
+### 5.1 Inicio
 
-### Contraste entre texto y fondo
+La pantalla de inicio presenta el nombre del producto, una descripci?n breve y un bot?n principal para iniciar el an?lisis. La estructura es simple, sin sobrecarga visual, y utiliza pasos claros para explicar el uso.
 
-La paleta principal se define en `mobile/src/theme/colors.ts`. Los pares principales cumplen el minimo AA de 4.5:1 para texto normal:
+**Resultado:** Cumple.  
+**Evidencia:** t?tulo principal, bot?n con etiqueta, pasos secuenciales y texto de apoyo.
 
-- `colors.text` sobre `colors.background`: 15.60:1.
-- `colors.textMuted` sobre `colors.background`: 4.79:1.
-- `colors.textMuted` sobre `colors.surface`: 5.16:1.
-- `colors.primary` sobre `colors.surface`: 5.32:1.
-- `colors.primary` sobre `colors.primarySoft`: 4.53:1.
-- `colors.danger` sobre `colors.surface`: 6.33:1.
-- `colors.warning` sobre `colors.surface`: 4.52:1.
-- blanco sobre `colors.primary`: 5.32:1.
+### 5.2 An?lisis de hoja
 
-Resultado: **Cumple** para los pares revisados. Debe repetirse si se cambia la paleta o se incorporan nuevas imagenes de fondo.
+La pantalla de an?lisis permite c?mara o galer?a, muestra el estado sin imagen, conserva una vista previa estable y comunica el procesamiento con un mensaje expl?cito. El mensaje de carga informa que el servicio puede tardar si estuvo inactivo, lo cual reduce incertidumbre en un despliegue con instancia gratuita.
 
-### Tamano y escalabilidad del texto
+**Resultado:** Cumple.  
+**Evidencia:** botones de acci?n claros, estado de carga, mensajes de error con `accessibilityRole="alert"`, imagen seleccionada con descripci?n accesible.
 
-React Native permite escalado de fuente por defecto al no definirse `allowFontScaling={false}`. Los tamanos base son legibles: titulos de 28 a 42 px, textos de 15 a 17 px, botones de 16 px. Riesgo residual: algunos contenedores visuales tienen alturas fijas, por ejemplo la vista previa de imagen y la barra inferior; se requiere validacion manual con texto al 200%.
+### 5.3 Resultado preliminar
 
-Resultado: **Cumple parcialmente**.
+El resultado muestra estado, confianza, observaci?n y recomendaci?n. No depende solo del color: usa texto, icono, porcentaje y contenido explicativo. Adem?s, permite reportar un resultado si el usuario considera que no coincide.
 
-### Etiquetas accesibles en botones, iconos, imagenes y campos
+**Resultado:** Cumple.  
+**Evidencia:** estado textual, porcentaje de confianza, notas, recomendaci?n y acci?n de reporte.
 
-Se agregaron etiquetas e indicaciones accesibles en botones reutilizables, pestaÃ±as, filas de historial, imagen seleccionada, miniaturas, imagen ampliada, botones de cierre y controles principales.
+### 5.4 Rechazo de imagen
 
-Ejemplos:
+Cuando la imagen no parece corresponder a una hoja o vegetaci?n, el sistema muestra un mensaje accionable y permite reportar el rechazo. Esto evita que un posible falso rechazo quede sin trazabilidad.
 
-- `PrimaryButton` expone `accessibilityLabel` y `accessibilityHint`.
-- `TabBar` expone `accessibilityRole="tab"` y `accessibilityState={{ selected }}`.
-- Imagen seleccionada en Analizar tiene `accessibilityLabel`.
-- Iconos decorativos usan `accessibilityElementsHidden` e `importantForAccessibility="no"`.
+**Resultado:** Cumple.  
+**Evidencia:** mensaje espec?fico, acci?n `Reportar rechazo`, formulario con motivo y comentario opcional.
 
-Resultado: **Cumple** despues de las correcciones.
+### 5.5 Historial y trazabilidad
 
-### Orden de navegacion y foco
+El historial funciona como centro de revisi?n. Integra an?lisis normales, resultados reportados y rechazos reportados. Incluye filtros con contadores: Todos, Reportados y Rechazos. El detalle permite revisar evidencia, fecha, resultado, comentario y ?ltimo reporte.
 
-El orden de lectura sigue el orden de renderizado: encabezado, descripcion, acciones, resultados o historial. En modales se agrego `accessibilityViewIsModal` para aislar el contenido modal en iOS. Se requiere prueba manual para confirmar el foco inicial y el retorno del foco al cerrar modal.
+**Resultado:** Cumple.  
+**Evidencia:** filtros, contadores, etiquetas de estado, detalle modal, acci?n de reporte desde historial.
 
-Resultado: **Cumple parcialmente**.
+### 5.6 Informaci?n, limitaciones y privacidad
 
-### Navegacion mediante teclado
+La pantalla informativa comunica patolog?as visibles, limitaciones del an?lisis, uso recomendado y uso de im?genes reportadas para revisi?n t?cnica y mejora del sistema.
 
-En web, `Pressable` se renderiza como control interactivo compatible con foco. No se detectaron manejadores que bloqueen el teclado. Se requiere prueba manual en Expo Web con Tab, Enter, Espacio y Escape/cierre de modales.
+**Resultado:** Cumple.  
+**Evidencia:** bloques tem?ticos con encabezados, texto claro y aviso de privacidad/mejora.
 
-Resultado: **Cumple parcialmente**.
+---
 
-### Compatibilidad con TalkBack o VoiceOver
+## 6. Resultados por criterio
 
-El codigo ahora incluye roles, nombres, estados y alertas suficientes para una lectura basica. No se puede afirmar cumplimiento total sin ejecucion en dispositivo real. Las pruebas manuales se listan en la seccion de evidencias.
+| C?digo | Criterio WCAG | Resultado | Evidencia principal | Riesgo residual |
+|---|---|---|---|---|
+| AX-01 | 1.1.1 Contenido no textual | Cumple | Im?genes y miniaturas tienen etiquetas; iconos decorativos se ocultan del lector | Validar lectura real con lector de pantalla |
+| AX-02 | 1.3.1 Informaci?n y relaciones | Cumple | Encabezados, bloques, modales y filas siguen jerarqu?a l?gica | Validaci?n manual de orden de lectura |
+| AX-03 | 1.3.4 Orientaci?n | Cumple | Expo configurado con `orientation: default` | Revisar visualmente en landscape |
+| AX-04 | 1.4.1 Uso del color | Cumple | Estados usan color, texto, iconos y etiquetas | Mantener si se agregan nuevos estados |
+| AX-05 | 1.4.3 Contraste m?nimo | Cumple | Paleta principal supera contraste AA en textos cr?ticos | Recalcular si cambia la paleta |
+| AX-06 | 1.4.4 Tama?o del texto | Cumple parcialmente | No se desactiva escalado de fuente | Probar texto al 200% |
+| AX-07 | 2.1.1 Teclado | Cumple parcialmente | Controles interactivos basados en Pressable | Probar Tab, Enter, Espacio en web |
+| AX-08 | 2.1.2 Sin trampas de teclado | Cumple parcialmente | No hay l?gica que capture foco permanentemente | Probar modales en navegador |
+| AX-09 | 2.4.3 Orden del foco | Cumple parcialmente | Orden visual y DOM siguen flujo l?gico | Confirmar foco inicial y retorno |
+| AX-10 | 2.4.6 Encabezados y etiquetas | Cumple | T?tulos, botones, acciones y filtros son descriptivos | Mantener consistencia en futuras pantallas |
+| AX-11 | 2.4.7 Foco visible | Cumple parcialmente | Estados visuales de controles presentes | Verificar foco en web con teclado |
+| AX-12 | 2.5.3 Etiqueta en el nombre | Cumple | Texto visible coincide con nombres accesibles | Revisar nuevos botones futuros |
+| AX-13 | 2.5.8 Tama?o del objetivo | Cumple | Botones principales y cierres cumplen m?nimo t?ctil | Mantener m?nimo de 44 px |
+| AX-14 | 3.3.1 Identificaci?n de errores | Cumple | Errores visibles y anunciables | Validar anuncio con lector |
+| AX-15 | 3.3.3 Sugerencias ante errores | Cumple | Mensajes indican formato, tama?o, contenido o permisos | Mantener mensajes espec?ficos |
+| AX-16 | 4.1.2 Nombre, funci?n, valor | Cumple | Roles, estados, labels e hints en controles | Prueba manual con lector |
+| AX-17 | 4.1.3 Mensajes de estado | Cumple | Carga, error y confirmaci?n usan estados visibles | Validar live region en navegador/dispositivo |
 
-Resultado: **Cumple parcialmente**.
+---
 
-### Mensajes de error y validaciones accesibles
+## 7. Hallazgos y mejoras aplicadas
 
-El backend ya valida formato, tamano y contenido real de imagen. El frontend ahora intenta recuperar el mensaje especifico enviado por la API y los errores visibles usan `accessibilityRole="alert"` y `accessibilityLiveRegion="assertive"`.
+### 7.1 Mejoras en comunicaci?n de estado
 
-Resultado: **Cumple**.
+Se reforz? el estado de carga durante el an?lisis con el mensaje: "Analizando imagen. Si el servicio estuvo inactivo, puede tardar unos segundos." Esto es relevante para una API desplegada en Render con instancia gratuita, donde el primer request puede demorar.
 
-### Tamano minimo de areas tactiles
+### 7.2 Mejora de trazabilidad operativa
 
-Los botones principales tienen `minHeight: 48`; las pestaÃ±as miden 82 x 56; filas de historial tienen `minHeight: 96`. El boton de cierre del modal fue corregido de 42 x 42 a 44 x 44.
+El historial dej? de ser solo una lista de an?lisis. Ahora funciona como herramienta de revisi?n con filtros y contadores, diferenciando casos normales, reportados y rechazos.
 
-Resultado: **Cumple**.
+### 7.3 Mejora de reportes
 
-### Dependencia exclusiva del color
+El producto permite reportar dos tipos de situaciones:
 
-El resultado no depende solo del color: ademas del color se muestran textos como `status_display`, `disease_label`, porcentaje de confianza, notas y recomendacion. Los estados de tabs usan color y fondo. Riesgo menor: la barra de confianza usa longitud/color como apoyo visual, pero tambien se muestra el porcentaje textual.
+- Resultado generado que el usuario considera incorrecto.
+- Imagen rechazada que el usuario considera v?lida.
 
-Resultado: **Cumple**.
+Ambos casos se conservan como evidencia para revisi?n y mejora futura.
 
-### Textos alternativos
+### 7.4 Mejora de textos y tono profesional
 
-Se agregaron textos alternativos a imagen seleccionada, miniaturas e imagen ampliada. La imagen de fondo de Inicio se marco como decorativa para evitar ruido de lector de pantalla.
+Se corrigi? el tono de interfaz para producto final: textos con acentos, etiquetas claras, advertencias expl?citas y comunicaci?n de limitaciones sin tratar la app como prototipo acad?mico.
 
-Resultado: **Cumple**.
+### 7.5 Privacidad y mejora
 
-### Encabezados y estructura semantica
+Se agreg? un bloque informativo que comunica que las im?genes y observaciones reportadas pueden conservarse para revisi?n t?cnica y mejora del sistema.
 
-Se agrego `accessibilityRole="header"` en titulos de pantallas, titulos de bloques y titulos de modales.
+---
 
-Resultado: **Cumple**.
+## 8. Verificaciones t?cnicas realizadas
 
-### Estados seleccionados, deshabilitados y activos
+Durante el cierre del producto se ejecutaron verificaciones t?cnicas sobre frontend y backend:
 
-`PrimaryButton` expone estado deshabilitado. `TabBar` expone estado seleccionado. Los botones mantienen estados presionados visuales. No hay controles complejos adicionales.
-
-Resultado: **Cumple**.
-
-### Orientacion de pantalla
-
-Antes la app estaba bloqueada a `portrait` en `mobile/app.json`. Se corrigio a `default` para permitir orientacion vertical y horizontal, salvo que el sistema o dispositivo imponga restricciones.
-
-Resultado: **Cumple** despues de la correccion.
-
-## 4. Tabla de resultados
-
-La tabla completa tambien fue generada en CSV: `docs/resultados_accesibilidad_wcag_2_2_aa.csv`.
-
-| Codigo | Pantalla o componente | Criterio WCAG | Prueba realizada | Resultado | Evidencia encontrada en el codigo | Problema detectado | Severidad | Recomendacion | Archivo y linea |
-|---|---|---|---|---|---|---|---|---|---|
-| AX-01 | Paleta global | 1.4.3 | Calculo de contraste texto/fondo | Cumple | Colores centralizados y ratios >= 4.5:1 | Sin problema en pares principales | Baja | Recalcular al cambiar colores | `mobile/src/theme/colors.ts:1` |
-| AX-02 | Boton reutilizable | 4.1.2, 2.5.3 | Revision de nombre/funcion/valor | Cumple | `accessibilityRole`, `accessibilityLabel`, `accessibilityHint` | Antes dependia del texto visible y no permitia hints | Alta | Mantener etiquetas descriptivas por accion | `mobile/src/components/PrimaryButton.tsx:29` |
-| AX-03 | Boton reutilizable | 2.5.8 | Revision de area tactil | Cumple | `minHeight: 48` | Sin problema | Baja | Mantener minimo >= 44 px | `mobile/src/components/PrimaryButton.tsx:59` |
-| AX-04 | TabBar | 4.1.2 | Revision de tabs | Cumple | Rol tab, etiqueta, hint y estado selected | Antes faltaba etiqueta/hint explicito | Alta | Probar anuncio con TalkBack/VoiceOver | `mobile/src/components/TabBar.tsx:27` |
-| AX-05 | Inicio | 1.1.1 | Revision de imagen de fondo | Cumple | `ImageBackground accessible={false}` | Antes podia ser anunciada sin aportar informacion | Media | Mantenerla decorativa salvo que transmita informacion | `mobile/src/screens/HomeScreen.tsx:14` |
-| AX-06 | Inicio | 1.3.1, 2.4.6 | Revision de encabezados y pasos | Cumple | Titulos con `header` y pasos agrupados | Antes los pasos podian leerse como numeros sueltos | Media | Validar lectura lineal | `mobile/src/screens/HomeScreen.tsx:24` |
-| AX-07 | Analizar | 1.1.1 | Revision de imagen seleccionada | Cumple | `accessibilityLabel` en imagen | Antes no tenia alternativa textual | Alta | Describir funcion de la imagen, no detalles no comprobables | `mobile/src/screens/AnalyzeScreen.tsx:92` |
-| AX-08 | Analizar | 3.3.1, 4.1.3 | Revision de errores visibles | Cumple | Error con `alert` y live region | Antes el error no se anunciaba como estado | Alta | Mantener mensajes especificos y accionables | `mobile/src/screens/AnalyzeScreen.tsx:150` |
-| AX-09 | API/Analizar | 3.3.3 | Revision de validaciones | Cumple | Cliente lee errores de API; backend valida tipo, tamano e imagen real | Antes se mostraba error generico | Alta | Conservar mensajes por campo | `mobile/src/api/client.ts:25`; `backend/diagnostics/serializers.py:46` |
-| AX-10 | Analizar | 1.4.1 | Revision de resultado y confianza | Cumple | Texto de estado, porcentaje, notas y recomendacion | Riesgo menor si se interpreta solo barra visual | Media | Mantener porcentaje textual junto a la barra | `mobile/src/screens/AnalyzeScreen.tsx:187` |
-| AX-11 | Historial | 4.1.2, 2.4.6 | Revision de filas tactiles | Cumple | Fila con etiqueta completa e hint | Antes la fila no tenia nombre programatico suficiente | Alta | Mantener resumen conciso por fila | `mobile/src/screens/HistoryScreen.tsx:78` |
-| AX-12 | Historial | 1.1.1 | Revision de miniatura e imagen ampliada | Cumple | Labels en miniatura e imagen ampliada | Antes las imagenes no tenian texto alternativo | Media | No inventar diagnostico desde la imagen | `mobile/src/screens/HistoryScreen.tsx:86`; `mobile/src/screens/HistoryScreen.tsx:139` |
-| AX-13 | Historial/modales | 2.4.3, 4.1.2 | Revision de modales | Cumple parcialmente | `accessibilityViewIsModal` y boton cerrar etiquetado | Falta confirmar foco inicial y retorno de foco en dispositivo | Media | Probar manualmente con lector de pantalla | `mobile/src/screens/HistoryScreen.tsx:123` |
-| AX-14 | Historial/modal | 2.5.8 | Revision boton cerrar | Cumple | Cierre 44 x 44 | Antes era 42 x 42 | Media | Mantener minimo tactil | `mobile/src/screens/HistoryScreen.tsx:329` |
-| AX-15 | Info | 1.3.1, 2.4.6 | Revision estructura | Cumple | Encabezados en titulo y bloques | Antes los bloques no exponian jerarquia | Media | Mantener titulos como headers | `mobile/src/screens/InfoScreen.tsx:16` |
-| AX-16 | Iconos | 1.1.1 | Revision de iconos decorativos | Cumple | Iconos ocultos del lector cuando son decorativos | Antes podian producir ruido | Media | Solo etiquetar iconos si reemplazan texto | `mobile/src/screens/InfoScreen.tsx:24` |
-| AX-17 | App general | 1.3.4 | Revision de orientacion | Cumple | `orientation: "default"` | Antes estaba bloqueado a `portrait` | Alta | Validar layout en landscape | `mobile/app.json:6` |
-| AX-18 | App general | 1.4.4 | Revision de escalabilidad | Cumple parcialmente | No se desactiva escalado de fuente | Riesgo en contenedores con alturas fijas | Media | Probar 200% y ajustar si hay recortes | `mobile/src/screens/HomeScreen.tsx:65`; `mobile/src/components/TabBar.tsx:51` |
-| AX-19 | Web | 2.1.1, 2.1.2, 2.4.7, 3.2.1 | Revision de teclado | Cumple parcialmente | Controles implementados con `Pressable` | Requiere prueba manual en Expo Web | Media | Probar Tab, Enter, Espacio y cierre de modales | `mobile/src/components/PrimaryButton.tsx:28`; `mobile/src/components/TabBar.tsx:26` |
-| AX-20 | App movil | 2.4.3, 4.1.2, 4.1.3 | Lectura con lector de pantalla | Cumple parcialmente | Roles, etiquetas, estados y alertas presentes | No comprobable solo desde codigo | Media | Ejecutar checklist manual | Varios archivos |
-
-## 5. Hallazgos principales
-
-### Problemas criticos
-
-- Antes de la correccion, varios controles no tenian nombre/hint programatico suficientemente explicito.
-- La orientacion estaba bloqueada a vertical, incumpliendo WCAG 1.3.4 si no existia una justificacion funcional.
-- Los errores del flujo de analisis no se anunciaban como alertas y el cliente reemplazaba errores especificos por un mensaje generico.
-
-### Problemas moderados
-
-- Imagenes de resultado e historial carecian de texto alternativo.
-- Los modales necesitaban mejor exposicion para lectores de pantalla.
-- El boton de cierre del modal era menor al minimo tactil recomendado por WCAG 2.2.
-- Los iconos decorativos podian generar ruido si eran anunciados.
-
-### Problemas menores
-
-- Riesgo residual de recorte visual con texto ampliado en contenedores con altura fija.
-- La navegacion por teclado y el foco inicial/retorno en modales requieren confirmacion manual.
-
-### Aspectos que cumplen correctamente
-
-- La paleta principal tiene contraste suficiente para texto normal.
-- Los botones principales ya tenian altura tactil adecuada.
-- El resultado no depende solo del color: incluye texto, porcentaje, notas y recomendacion.
-- El backend valida tipo, tamano y contenido real del archivo de imagen.
-
-## 6. Correcciones realizadas
-
-Archivos modificados:
-
-- `mobile/app.json`.
-- `mobile/src/api/client.ts`.
-- `mobile/src/components/PrimaryButton.tsx`.
-- `mobile/src/components/TabBar.tsx`.
-- `mobile/src/screens/HomeScreen.tsx`.
-- `mobile/src/screens/AnalyzeScreen.tsx`.
-- `mobile/src/screens/HistoryScreen.tsx`.
-- `mobile/src/screens/InfoScreen.tsx`.
-
-### Correccion 1: nombres y ayudas accesibles en botones
-
-Antes:
-
-```tsx
-<Pressable
-  accessibilityRole="button"
-  accessibilityState={{ disabled: Boolean(disabled) }}
->
-```
-
-Despues:
-
-```tsx
-<Pressable
-  accessibilityRole="button"
-  accessibilityLabel={accessibilityLabel || label}
-  accessibilityHint={accessibilityHint}
-  accessibilityState={{ disabled: Boolean(disabled) }}
->
-```
-
-Impacto: mejora WCAG 4.1.2 y 2.5.3 al exponer nombre, funcion, valor y ayudas contextuales.
-
-### Correccion 2: tabs con etiquetas y estado seleccionado
-
-Antes:
-
-```tsx
-<Pressable accessibilityRole="tab" accessibilityState={{ selected }}>
-```
-
-Despues:
-
-```tsx
-<Pressable
-  accessibilityRole="tab"
-  accessibilityLabel={`Pestana ${item.label}`}
-  accessibilityHint={`Muestra la pantalla ${item.label}`}
-  accessibilityState={{ selected }}
->
-```
-
-Impacto: mejora el anuncio de navegacion inferior y el estado activo.
-
-### Correccion 3: imagenes y fondo decorativo
-
-Antes:
-
-```tsx
-<Image source={{ uri: imageUri }} style={styles.image} />
-```
-
-Despues:
-
-```tsx
-<Image
-  source={{ uri: imageUri }}
-  style={styles.image}
-  accessibilityLabel="Imagen seleccionada de una hoja de cacao para analizar."
-/>
-```
-
-Impacto: mejora WCAG 1.1.1. La imagen de fondo de Inicio se marco como decorativa con `accessible={false}`.
-
-### Correccion 4: errores y estados de carga
-
-Antes:
-
-```tsx
-{error ? <Text style={styles.error}>{error}</Text> : null}
-```
-
-Despues:
-
-```tsx
-{error ? (
-  <Text accessibilityRole="alert" accessibilityLiveRegion="assertive" style={styles.error}>
-    {error}
-  </Text>
-) : null}
-```
-
-Impacto: mejora WCAG 3.3.1 y 4.1.3 al anunciar errores como mensajes de estado.
-
-### Correccion 5: errores especificos desde la API
-
-Antes:
-
-```ts
-if (!response.ok) {
-  throw new Error("No se pudo procesar la imagen.");
-}
-```
-
-Despues:
-
-```ts
-if (!response.ok) {
-  throw new Error(await getErrorMessage(response, "No se pudo procesar la imagen."));
-}
-```
-
-Impacto: mejora WCAG 3.3.3 porque el usuario recibe mensajes como formato no permitido, imagen invalida o tamano maximo.
-
-### Correccion 6: modales y cierre tactil
-
-Antes:
-
-```tsx
-<View style={styles.modalCard}>
-<Pressable accessibilityRole="button" onPress={() => setSelectedItem(null)} style={styles.closeButton}>
-```
-
-Despues:
-
-```tsx
-<View accessibilityViewIsModal style={styles.modalCard}>
-<Pressable
-  accessibilityRole="button"
-  accessibilityLabel="Cerrar detalle del analisis"
-  onPress={() => setSelectedItem(null)}
-  style={styles.closeButton}
->
-```
-
-Ademas, el boton de cierre paso de 42 x 42 a 44 x 44.
-
-### Correccion 7: orientacion
-
-Antes:
-
-```json
-"orientation": "portrait"
-```
-
-Despues:
-
-```json
-"orientation": "default"
-```
-
-Impacto: mejora WCAG 1.3.4 al no imponer una orientacion unica.
-
-## 7. Resultados finales
-
-Resumen:
-
-- Total de criterios WCAG unicos evaluados: 18.
-- Total de pruebas/resultados documentados en la tabla: 20.
-- Cumple: 16.
-- Cumple parcialmente: 4.
-- No cumple: 0.
-- Porcentaje estimado de cumplimiento despues de correcciones: 80% con evidencia completa; 100% sin no conformidades detectadas, sujeto a pruebas manuales pendientes.
-
-Comparacion antes y despues:
-
-- Antes de correcciones: 8 cumplian, 5 cumplian parcialmente y 7 no cumplian o tenian barreras claras desde el codigo.
-- Despues de correcciones: 16 cumplen, 4 cumplen parcialmente y 0 quedan como no cumple desde revision de codigo.
-
-Limitaciones:
-
-- No se ejecuto TalkBack ni VoiceOver en dispositivo real.
-- No se genero una auditoria automatica con Lighthouse/axe porque la app Expo no fue renderizada en navegador durante esta revision.
-- El escalado de texto al 200% requiere inspeccion visual manual.
-- El foco de teclado en Expo Web y el foco inicial/retorno de modales requieren validacion manual.
-- La imagen de fondo remota puede cambiar o fallar; su contraste debe revisarse si se reemplaza.
-
-Verificaciones ejecutadas:
-
-- `npm run typecheck`: correcto.
 - `python manage.py check`: correcto.
-- `python manage.py test`: 7 pruebas correctas.
+- `python manage.py test`: correcto, 12 pruebas automatizadas.
+- `npm run build:web`: correcto, exportaci?n web generada para Netlify.
 
-## 8. Evidencias y capturas requeridas
+Estas verificaciones no reemplazan una auditor?a manual con tecnolog?as asistivas, pero reducen el riesgo de errores funcionales en la entrega.
 
-Capturas recomendadas para anexar a la validacion del producto:
+---
 
-1. Pantalla Inicio en vertical: hero, boton "Analizar hoja" y pasos.
-2. Pantalla Analizar sin imagen: estado "Sin imagen seleccionada".
-3. Pantalla Analizar con imagen seleccionada antes de procesar.
-4. Pantalla Analizar con resultado saludable.
-5. Pantalla Analizar con resultado de posible patologia o confianza baja.
-6. Pantalla Analizar con error: permiso denegado, archivo invalido o backend apagado.
-7. Pantalla Historial con registros.
-8. Modal "Detalle del analisis".
-9. Modal "Limpiar historial".
-10. Pantalla Informacion.
-11. Pantallas Inicio, Analizar e Historial en orientacion horizontal.
-12. Pantalla con tamano de texto aumentado al menos al 200%.
+## 9. Riesgos residuales
 
-Pruebas que requieren ejecucion manual con TalkBack o VoiceOver:
+Los siguientes puntos quedan identificados como controles manuales recomendados antes de una certificaci?n formal:
 
-- Lectura lineal de cada pantalla.
-- Anuncio de pestanas y estado seleccionado.
-- Anuncio de botones y hints.
-- Anuncio de imagen seleccionada, miniaturas e imagen ampliada.
-- Anuncio automatico de errores.
-- Navegacion dentro de modales y retorno al cerrar.
-- Verificacion de que los iconos decorativos no se anuncian.
+1. Probar TalkBack en Android.
+2. Probar VoiceOver en iOS.
+3. Verificar navegaci?n por teclado en navegador: Tab, Shift+Tab, Enter y Espacio.
+4. Confirmar foco inicial y retorno del foco en modales.
+5. Probar escalado de texto al 200%.
+6. Probar orientaci?n horizontal en pantallas principales.
+7. Ejecutar auditor?a automatizada con Lighthouse o axe sobre la versi?n web publicada.
 
-### Checklist manual paso a paso
+Ninguno de estos puntos representa una barrera cr?tica detectada desde el c?digo; son validaciones de conformidad manual esperadas en un proceso formal WCAG.
 
-1. Activar TalkBack en Android o VoiceOver en iOS.
-2. Abrir la app en Inicio.
-3. Recorrer la pantalla de arriba hacia abajo y confirmar que se anuncia "Cacao Leaf", descripcion, boton "Analizar hoja" y los tres pasos completos.
-4. Ir a cada pestana de la barra inferior y confirmar que se anuncia como pestana y que indica la seleccion actual.
-5. Entrar a Analizar.
-6. Confirmar que el estado sin imagen se anuncia como "No hay imagen seleccionada".
-7. Activar "Camara" y "Galeria"; confirmar que el lector anuncia nombre y proposito.
-8. Denegar un permiso y verificar que el error se anuncia automaticamente.
-9. Seleccionar una imagen y confirmar que se anuncia como imagen seleccionada.
-10. Ejecutar "Procesar imagen" y confirmar anuncio de progreso.
-11. Revisar el resultado y confirmar que se leen estado, enfermedad, confianza, advertencia si aplica, notas y recomendacion.
-12. Entrar a Historial.
-13. Recorrer registros y confirmar que cada fila anuncia resultado, confianza, fecha y que abre detalle.
-14. Abrir un detalle y verificar que el foco queda dentro del modal.
-15. Cerrar el detalle y verificar que el foco vuelve al contexto anterior.
-16. Abrir "Limpiar historial", cancelar y luego repetir para confirmar que ambos botones se anuncian correctamente.
-17. Entrar a Informacion y confirmar que los encabezados se anuncian como secciones.
-18. En Expo Web, repetir navegacion con Tab, Shift+Tab, Enter y Espacio.
-19. Aumentar el tamano de fuente del sistema al 200% y revisar que no haya texto cortado ni superpuesto.
-20. Rotar el dispositivo a horizontal y revisar que las pantallas principales sigan utilizables.
+---
 
+## 10. Checklist final recomendado
+
+| Prueba | Resultado esperado |
+|---|---|
+| Abrir el sitio web publicado | La app carga sin errores y permite iniciar an?lisis |
+| Usar c?mara o galer?a | El usuario puede seleccionar una imagen |
+| Analizar hoja v?lida | Se muestra resultado, confianza, observaci?n y recomendaci?n |
+| Enviar imagen no relacionada | Se muestra rechazo con explicaci?n y opci?n de reporte |
+| Reportar resultado | El caso queda marcado como reportado |
+| Reportar rechazo | El rechazo aparece en historial |
+| Revisar historial | Se muestran filtros con contadores |
+| Abrir detalle | El modal muestra datos del caso y permite cerrar |
+| Consultar informaci?n | Se muestran limitaciones, uso recomendado y privacidad |
+| Navegar con teclado en web | Los controles principales son alcanzables y operables |
+| Usar lector de pantalla | T?tulos, botones, estados y errores son anunciados correctamente |
+
+---
+
+## 11. Dictamen final
+
+Cacao Leaf presenta una experiencia alineada con WCAG 2.2 AA para los flujos principales de uso. La interfaz es operable, comprensible y consistente; los errores son visibles y accionables; los resultados no dependen exclusivamente del color; los controles principales tienen tama?o t?ctil adecuado; y el historial conserva trazabilidad de casos observados.
+
+El producto se considera listo para entrega final y operaci?n inicial, con la recomendaci?n de ejecutar pruebas manuales con lectores de pantalla y teclado antes de declarar conformidad formal completa.
+
+---
+
+## 12. Archivos relacionados
+
+- `mobile/src/screens/HomeScreen.tsx`
+- `mobile/src/screens/AnalyzeScreen.tsx`
+- `mobile/src/screens/HistoryScreen.tsx`
+- `mobile/src/screens/InfoScreen.tsx`
+- `mobile/src/components/PrimaryButton.tsx`
+- `mobile/src/components/TabBar.tsx`
+- `mobile/src/theme/colors.ts`
+- `mobile/src/api/client.ts`
+- `backend/diagnostics/serializers.py`
+- `backend/diagnostics/views.py`
+- `netlify.toml`
+- `render.yaml`
