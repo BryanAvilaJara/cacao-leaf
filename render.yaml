@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: cacao-leaf-api
+    env: python
+    rootDir: backend
+    buildCommand: "pip install -r requirements.txt && python manage.py migrate"
+    startCommand: "gunicorn cacao_api.wsgi:application --bind 0.0.0.0:$PORT"
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.0

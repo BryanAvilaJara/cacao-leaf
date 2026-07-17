@@ -1,0 +1,584 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Mockups IHC - Cacao Leaf</title>
+  <style>
+    :root {
+      --bg: #f5f7f2;
+      --page: #e9eee5;
+      --surface: #ffffff;
+      --surface-muted: #e8efe1;
+      --muted: #667064;
+      --text: #142016;
+      --primary: #1f7a4d;
+      --primary-dark: #155d3b;
+      --border: #d7dfd2;
+      --warning: #b65f21;
+      --danger: #a83a32;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: var(--page);
+      color: var(--text);
+    }
+
+    header {
+      padding: 28px 36px;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 30px;
+      line-height: 1.15;
+    }
+
+    .subtitle {
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.5;
+      max-width: 980px;
+    }
+
+    .board {
+      display: flex;
+      gap: 28px;
+      padding: 34px;
+      overflow-x: auto;
+      align-items: flex-start;
+    }
+
+    .frame-wrap {
+      display: grid;
+      gap: 10px;
+      justify-items: center;
+      flex: 0 0 auto;
+    }
+
+    .frame-title {
+      width: 300px;
+      font-weight: 800;
+      color: var(--text);
+    }
+
+    .phone {
+      width: 300px;
+      height: 640px;
+      border: 10px solid #111812;
+      border-radius: 34px;
+      overflow: hidden;
+      background: var(--bg);
+      box-shadow: 0 18px 44px rgba(20, 32, 22, 0.18);
+    }
+
+    .screen {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      background: var(--bg);
+    }
+
+    .content {
+      flex: 1;
+      overflow: hidden;
+      padding: 18px;
+    }
+
+    .hero {
+      height: 360px;
+      display: flex;
+      align-items: flex-end;
+      padding: 22px;
+      color: #fff;
+      background:
+        linear-gradient(180deg, rgba(0,0,0,0.08), rgba(0,0,0,0.58)),
+        radial-gradient(ellipse at 68% 28%, rgba(155,218,90,.95) 0 18%, transparent 19%),
+        radial-gradient(ellipse at 52% 36%, rgba(54,142,65,.9) 0 22%, transparent 23%),
+        radial-gradient(ellipse at 42% 58%, rgba(31,122,77,.9) 0 30%, transparent 31%),
+        linear-gradient(135deg, #14351f, #436b38 54%, #0d2418);
+    }
+
+    .hero h2 {
+      margin: 0;
+      font-size: 34px;
+      line-height: 1;
+    }
+
+    .hero p {
+      margin: 10px 0 18px;
+      font-size: 14px;
+      line-height: 1.45;
+      color: #eef4eb;
+    }
+
+    .title {
+      font-size: 25px;
+      font-weight: 900;
+      margin: 4px 0 8px;
+    }
+
+    .copy {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+      margin: 0 0 14px;
+    }
+
+    .preview {
+      height: 210px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+      background: #fff;
+      margin-bottom: 12px;
+    }
+
+    .leaf-art {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      overflow: hidden;
+      background: linear-gradient(135deg, #f6faf2, #e7efe2);
+    }
+
+    .leaf-art::before {
+      content: "";
+      position: absolute;
+      width: 190px;
+      height: 255px;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%) rotate(-18deg);
+      border-radius: 95% 0 95% 0;
+      background:
+        linear-gradient(90deg, transparent 48%, rgba(235,245,183,.95) 49% 52%, transparent 53%),
+        repeating-linear-gradient(62deg, transparent 0 18px, rgba(240,248,205,.35) 19px 21px),
+        linear-gradient(135deg, #a9db54, #1f7a4d 48%, #0e5a39);
+      box-shadow: 0 16px 28px rgba(20,32,22,.18);
+    }
+
+    .leaf-art.pathology::before {
+      background:
+        radial-gradient(circle at 42% 45%, rgba(118,61,26,.85) 0 10px, transparent 11px),
+        radial-gradient(circle at 64% 34%, rgba(171,96,34,.86) 0 13px, transparent 14px),
+        radial-gradient(circle at 52% 62%, rgba(92,46,25,.82) 0 15px, transparent 16px),
+        linear-gradient(90deg, transparent 48%, rgba(235,245,183,.95) 49% 52%, transparent 53%),
+        repeating-linear-gradient(62deg, transparent 0 18px, rgba(240,248,205,.35) 19px 21px),
+        linear-gradient(135deg, #b7c85d, #6d8f36 48%, #5d4e24);
+    }
+
+    .leaf-art.small-leaf {
+      width: 58px;
+      height: 58px;
+      border-radius: 8px;
+      flex: 0 0 auto;
+    }
+
+    .leaf-art.small-leaf::before {
+      width: 42px;
+      height: 52px;
+    }
+
+    .actions {
+      display: grid;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .source-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .button {
+      min-height: 44px;
+      border-radius: 8px;
+      background: var(--primary);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-weight: 800;
+      font-size: 14px;
+      border: 1px solid var(--primary);
+      text-align: center;
+    }
+
+    .button.secondary {
+      background: var(--surface);
+      color: var(--primary);
+      border-color: var(--primary);
+    }
+
+    .button.disabled {
+      opacity: .55;
+    }
+
+    .card, .result {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: #fff;
+      padding: 12px;
+      margin-top: 10px;
+    }
+
+    .result {
+      display: grid;
+      gap: 6px;
+    }
+
+    .result-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 20px;
+      font-weight: 900;
+      color: var(--danger);
+    }
+
+    .result-header.healthy {
+      color: var(--primary);
+    }
+
+    .confidence {
+      color: var(--warning);
+      font-weight: 900;
+      font-size: 14px;
+    }
+
+    .warning {
+      color: var(--danger);
+      font-weight: 800;
+      font-size: 12px;
+      line-height: 1.35;
+    }
+
+    .status {
+      color: var(--text);
+      font-weight: 800;
+      font-size: 14px;
+    }
+
+    .small {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
+      margin: 0;
+    }
+
+    .row {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .pill {
+      display: inline-block;
+      background: var(--surface-muted);
+      color: var(--primary-dark);
+      border-radius: 8px;
+      padding: 6px 8px;
+      margin: 5px 4px 0 0;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .tabbar {
+      height: 64px;
+      background: #fff;
+      border-top: 1px solid var(--border);
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      align-items: center;
+    }
+
+    .tab {
+      display: grid;
+      gap: 3px;
+      justify-items: center;
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .tab.active {
+      color: var(--primary);
+      font-weight: 800;
+    }
+
+    .icon {
+      font-size: 17px;
+      line-height: 1;
+    }
+
+    .connector {
+      flex: 0 0 72px;
+      height: 640px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--primary-dark);
+      font-weight: 900;
+      position: relative;
+      margin-top: 28px;
+    }
+
+    .connector::before {
+      content: "";
+      width: 52px;
+      height: 3px;
+      background: var(--primary);
+      display: block;
+      border-radius: 99px;
+    }
+
+    .connector::after {
+      content: "";
+      width: 0;
+      height: 0;
+      border-top: 9px solid transparent;
+      border-bottom: 9px solid transparent;
+      border-left: 14px solid var(--primary);
+      position: absolute;
+      right: 6px;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+
+    .connector span {
+      position: absolute;
+      top: calc(50% - 48px);
+      left: 50%;
+      transform: translateX(-50%);
+      width: 118px;
+      text-align: center;
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 7px 8px;
+      font-size: 12px;
+      line-height: 1.2;
+      box-shadow: 0 8px 18px rgba(20,32,22,.1);
+    }
+
+    .notes {
+      padding: 0 34px 34px;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(240px, 1fr));
+      gap: 18px;
+    }
+
+    .note {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 16px;
+    }
+
+    .note h2 {
+      margin: 0 0 8px;
+      font-size: 17px;
+    }
+
+    .note p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.55;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Mockups actuales - Cacao Leaf</h1>
+    <p class="subtitle">Maquetas visuales del prototipo actualizado segun el avance semanal: camara, galeria, procesamiento con modelo entrenado, advertencia por baja confianza, historial e informacion responsable.</p>
+  </header>
+
+  <main class="board">
+    <section class="frame-wrap">
+      <div class="frame-title">1. Inicio</div>
+      <div class="phone">
+        <div class="screen">
+          <div class="hero">
+            <div>
+              <h2>Cacao Leaf</h2>
+              <p>Prototipo movil para clasificar hojas de cacao como sanas o con posible patologia visible.</p>
+              <div class="button">Analizar hoja</div>
+            </div>
+          </div>
+          <div class="content">
+            <div class="title">Alcance</div>
+            <p class="copy">Carga o captura de imagen, procesamiento en Django, resultado preliminar, recomendacion e historial.</p>
+            <div class="card">
+              <div class="status">Decisión IHC</div>
+              <p class="small">La pantalla inicial reduce carga cognitiva: muestra una accion principal y resume el alcance.</p>
+            </div>
+          </div>
+          <nav class="tabbar">
+            <div class="tab active"><span class="icon">⌂</span>Inicio</div>
+            <div class="tab"><span class="icon">□</span>Analizar</div>
+            <div class="tab"><span class="icon">↺</span>Historial</div>
+            <div class="tab"><span class="icon">ⓘ</span>Info</div>
+          </nav>
+        </div>
+      </div>
+    </section>
+
+    <div class="connector"><span>Accion primaria</span></div>
+
+    <section class="frame-wrap">
+      <div class="frame-title">2. Seleccion de imagen</div>
+      <div class="phone">
+        <div class="screen">
+          <div class="content">
+            <div class="title">Analisis de hoja</div>
+            <p class="copy">Selecciona una foto clara de una hoja de cacao. El resultado es preliminar y no reemplaza la revision de un especialista agricola.</p>
+            <div class="preview"><div class="leaf-art"></div></div>
+            <div class="actions">
+              <div class="source-actions">
+                <div class="button">◉ Camara</div>
+                <div class="button secondary">▧ Galeria</div>
+              </div>
+              <div class="button">➤ Procesar</div>
+            </div>
+            <div class="card">
+              <div class="status">Decisión IHC</div>
+              <p class="small">Camara y Galeria son acciones distintas; separarlas evita ambiguedad y mejora el control del usuario.</p>
+            </div>
+          </div>
+          <nav class="tabbar">
+            <div class="tab"><span class="icon">⌂</span>Inicio</div>
+            <div class="tab active"><span class="icon">□</span>Analizar</div>
+            <div class="tab"><span class="icon">↺</span>Historial</div>
+            <div class="tab"><span class="icon">ⓘ</span>Info</div>
+          </nav>
+        </div>
+      </div>
+    </section>
+
+    <div class="connector"><span>Procesamiento</span></div>
+
+    <section class="frame-wrap">
+      <div class="frame-title">3. Resultado con baja confianza</div>
+      <div class="phone">
+        <div class="screen">
+          <div class="content">
+            <div class="title">Analisis de hoja</div>
+            <p class="copy">El sistema muestra resultado, confianza y recomendacion responsable.</p>
+            <div class="preview"><div class="leaf-art pathology"></div></div>
+            <div class="result">
+              <div class="result-header">⚠ Posible patologia</div>
+              <span class="confidence">56.12% confianza</span>
+              <span class="warning">Confianza baja: repite la foto con mejor iluminacion o valida con un especialista.</span>
+              <span class="status">Posible patologia visible</span>
+              <p class="small">Modelo ML entrenado con dataset CocoaSwolSet de hojas de cacao.</p>
+            </div>
+          </div>
+          <nav class="tabbar">
+            <div class="tab"><span class="icon">⌂</span>Inicio</div>
+            <div class="tab active"><span class="icon">□</span>Analizar</div>
+            <div class="tab"><span class="icon">↺</span>Historial</div>
+            <div class="tab"><span class="icon">ⓘ</span>Info</div>
+          </nav>
+        </div>
+      </div>
+    </section>
+
+    <div class="connector"><span>Consulta posterior</span></div>
+
+    <section class="frame-wrap">
+      <div class="frame-title">4. Historial</div>
+      <div class="phone">
+        <div class="screen">
+          <div class="content">
+            <div class="title">Historial</div>
+            <p class="copy">Lista de analisis guardados en SQLite mediante Django.</p>
+            <div class="card row">
+              <div class="leaf-art small-leaf"></div>
+              <div>
+                <div class="status">Hoja sana</div>
+                <div class="small">91.20% confianza</div>
+                <div class="small">22/05/2026 18:55</div>
+              </div>
+            </div>
+            <div class="card row">
+              <div class="leaf-art small-leaf pathology"></div>
+              <div>
+                <div class="status">Posible patologia</div>
+                <div class="small">74.80% confianza</div>
+                <div class="small">22/05/2026 18:58</div>
+              </div>
+            </div>
+            <div class="card">
+              <div class="status">Decisión IHC</div>
+              <p class="small">El historial permite trazabilidad y evita que el usuario pierda resultados anteriores.</p>
+            </div>
+          </div>
+          <nav class="tabbar">
+            <div class="tab"><span class="icon">⌂</span>Inicio</div>
+            <div class="tab"><span class="icon">□</span>Analizar</div>
+            <div class="tab active"><span class="icon">↺</span>Historial</div>
+            <div class="tab"><span class="icon">ⓘ</span>Info</div>
+          </nav>
+        </div>
+      </div>
+    </section>
+
+    <div class="connector"><span>Apoyo y limites</span></div>
+
+    <section class="frame-wrap">
+      <div class="frame-title">5. Informacion</div>
+      <div class="phone">
+        <div class="screen">
+          <div class="content">
+            <div class="title">Patologias detectables</div>
+            <p class="copy">Pantalla informativa para explicar sintomas visibles y limitaciones.</p>
+            <div class="card">
+              <div class="status">Senales visuales</div>
+              <span class="pill">Manchas</span>
+              <span class="pill">Amarillamiento</span>
+              <span class="pill">Necrosis</span>
+              <span class="pill">Deformacion</span>
+              <p class="small">Ayuda a que el usuario entienda que elementos observa el sistema.</p>
+            </div>
+            <div class="card">
+              <div class="status">Limitacion</div>
+              <p class="small">No reemplaza el diagnostico profesional. La app entrega una orientacion preliminar.</p>
+            </div>
+          </div>
+          <nav class="tabbar">
+            <div class="tab"><span class="icon">⌂</span>Inicio</div>
+            <div class="tab"><span class="icon">□</span>Analizar</div>
+            <div class="tab"><span class="icon">↺</span>Historial</div>
+            <div class="tab active"><span class="icon">ⓘ</span>Info</div>
+          </nav>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <section class="notes">
+    <article class="note">
+      <h2>Estructura de navegacion</h2>
+      <p>La barra inferior mantiene cuatro secciones estables: Inicio, Analizar, Historial e Info. Esto permite reconocimiento rapido y evita rutas ocultas.</p>
+    </article>
+    <article class="note">
+      <h2>Controles principales</h2>
+      <p>Los botones usan icono y texto porque las acciones son criticas: tomar foto, elegir imagen y procesar. El boton Procesar se desactiva hasta que exista imagen.</p>
+    </article>
+    <article class="note">
+      <h2>Retroalimentacion</h2>
+      <p>La interfaz muestra vista previa, carga, resultado, confianza, advertencia y recomendacion. Esto cierra el ciclo de accion-respuesta esperado en IHC.</p>
+    </article>
+  </section>
+</body>
+</html>
