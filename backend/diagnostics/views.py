@@ -2,7 +2,7 @@ from rest_framework import mixins, status, viewsets
 from rest_framework.decorators import action, api_view
 from rest_framework.response import Response
 
-from .models import LeafAnalysis
+from .models import LeafAnalysis, RejectedImageReport
 from .serializers import FeedbackReportSerializer, LeafAnalysisSerializer, RejectedImageReportSerializer
 
 
@@ -11,12 +11,17 @@ def health_check(_request):
     return Response({"status": "ok", "service": "cacao-leaf-diagnostics"})
 
 
-@api_view(["POST"])
+@api_view(["GET", "POST"])
 def rejected_feedback(request):
-    serializer = RejectedImageReportSerializer(data=request.data)
+    if request.method == "GET":
+        reports = RejectedImageReport.objects.all()
+        serializer = RejectedImageReportSerializer(reports, many=True, context={"request": request})
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    serializer = RejectedImageReportSerializer(data=request.data, context={"request": request})
     serializer.is_valid(raise_exception=True)
     report = serializer.save()
-    output = RejectedImageReportSerializer(report)
+    output = RejectedImageReportSerializer(report, context={"request": request})
     return Response(output.data, status=status.HTTP_201_CREATED)
 
 

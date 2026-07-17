@@ -10,6 +10,19 @@ export type AnalysisResult = {
   recommendation: string;
   notes: string;
   created_at: string;
+  feedback_count: number;
+  latest_feedback_reason_display: string;
+  latest_feedback_comment: string;
+};
+
+export type RejectedFeedbackReport = {
+  id: number;
+  image_url: string | null;
+  error_message: string;
+  reason: RejectedFeedbackReason;
+  reason_display: string;
+  comment: string;
+  created_at: string;
 };
 
 const PRODUCTION_API_URL = "https://cacao-leaf-api.onrender.com";
@@ -86,6 +99,16 @@ export async function listAnalyses(): Promise<AnalysisResult[]> {
 
   if (!response.ok) {
     throw new Error("No se pudo cargar el historial.");
+  }
+
+  return response.json();
+}
+
+export async function listRejectedFeedback(): Promise<RejectedFeedbackReport[]> {
+  const response = await fetch(`${API_BASE_URL}/api/rejected-feedback/`);
+
+  if (!response.ok) {
+    throw new Error("No se pudieron cargar los reportes.");
   }
 
   return response.json();

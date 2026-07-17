@@ -12,6 +12,9 @@ MAX_IMAGE_SIZE_BYTES = 5 * 1024 * 1024
 class LeafAnalysisSerializer(serializers.ModelSerializer):
     status_display = serializers.CharField(source="get_status_display", read_only=True)
     image_url = serializers.SerializerMethodField()
+    feedback_count = serializers.SerializerMethodField()
+    latest_feedback_reason_display = serializers.SerializerMethodField()
+    latest_feedback_comment = serializers.SerializerMethodField()
 
     class Meta:
         model = LeafAnalysis
@@ -26,6 +29,9 @@ class LeafAnalysisSerializer(serializers.ModelSerializer):
             "recommendation",
             "notes",
             "created_at",
+            "feedback_count",
+            "latest_feedback_reason_display",
+            "latest_feedback_comment",
         ]
         read_only_fields = [
             "status",
@@ -34,6 +40,9 @@ class LeafAnalysisSerializer(serializers.ModelSerializer):
             "recommendation",
             "notes",
             "created_at",
+            "feedback_count",
+            "latest_feedback_reason_display",
+            "latest_feedback_comment",
         ]
 
     def get_image_url(self, obj):
@@ -42,6 +51,17 @@ class LeafAnalysisSerializer(serializers.ModelSerializer):
             return None
         url = obj.image.url
         return request.build_absolute_uri(url) if request else url
+
+    def get_feedback_count(self, obj):
+        return obj.feedback_reports.count()
+
+    def get_latest_feedback_reason_display(self, obj):
+        report = obj.feedback_reports.first()
+        return report.get_reason_display() if report else ""
+
+    def get_latest_feedback_comment(self, obj):
+        report = obj.feedback_reports.first()
+        return report.comment if report else ""
 
     def validate_image(self, image):
         content_type = getattr(image, "content_type", "")
@@ -98,19 +118,29 @@ class FeedbackReportSerializer(serializers.ModelSerializer):
     def validate_comment(self, value):
         return value.strip()[:500]
 
+
 class RejectedImageReportSerializer(serializers.ModelSerializer):
     reason_display = serializers.CharField(source="get_reason_display", read_only=True)
+    image_url = serializers.SerializerMethodField()
 
     class Meta:
         model = RejectedImageReport
-        fields = ["id", "image", "error_message", "reason", "reason_display", "comment", "created_at"]
-        read_only_fields = ["id", "reason_display", "created_at"]
+        fields = ["id", "image", "image_url", "error_message", "reason", "reason_display", "comment", "created_at"]
+        read_only_fields = ["id", "image_url", "reason_display", "created_at"]
+
+    def get_image_url(self, obj):
+        request = self.context.get("request")
+        if not obj.image:
+            return None
+        url = obj.image.url
+        return request.build_absolute_uri(url) if request else url
 
     def validate_comment(self, value):
         return value.strip()[:500]
 
     def validate_error_message(self, value):
         return value.strip()[:500]
+
 
 def looks_like_vegetation(image: Image.Image) -> bool:
     rgb_image = image.convert("RGB").resize((96, 96))

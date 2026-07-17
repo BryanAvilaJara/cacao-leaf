@@ -72,6 +72,9 @@ class LeafAnalysisApiTests(TestCase):
                 "recommendation",
                 "notes",
                 "created_at",
+                "feedback_count",
+                "latest_feedback_reason_display",
+                "latest_feedback_comment",
             },
         )
         self.assertEqual(response.data["status"], "healthy")
@@ -142,6 +145,25 @@ class LeafAnalysisApiTests(TestCase):
         self.assertEqual(RejectedImageReport.objects.count(), 1)
         self.assertEqual(response.data["reason"], "was_leaf")
         self.assertIn("rejected_reports", response.data["image"])
+
+    def test_rejected_feedback_list_returns_reported_items(self):
+        self.client.post(
+            "/api/rejected-feedback/",
+            {
+                "image": self._poster_like_image_file(),
+                "reason": "was_leaf",
+                "comment": "Era una hoja real, revisar el filtro.",
+                "error_message": "La imagen no parece corresponder a una hoja o vegetacion.",
+            },
+            format="multipart",
+        )
+
+        response = self.client.get("/api/rejected-feedback/")
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 1)
+        self.assertEqual(response.data[0]["reason"], "was_leaf")
+        self.assertIn("image_url", response.data[0])
 
     def test_list_analyses_returns_created_items(self):
         with patch("diagnostics.classifier.predict_with_trained_model", return_value=None):
