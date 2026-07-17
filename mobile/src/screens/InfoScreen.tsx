@@ -1,4 +1,4 @@
-import { ScrollView, StyleSheet, Text, View } from "react-native";
+﻿import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { AlertCircle, Leaf, ShieldCheck } from "lucide-react-native";
 
 import { colors } from "../theme/colors";
@@ -15,8 +15,7 @@ export function InfoScreen() {
     <ScrollView contentContainerStyle={styles.screen}>
       <Text accessibilityRole="header" style={styles.title}>Patologias detectables</Text>
       <Text style={styles.copy}>
-        El prototipo esta orientado a apoyar la clasificacion preliminar de sintomas visibles en
-        hojas de cacao mediante imagenes.
+        Cacao Leaf apoya la clasificacion preliminar de sintomas visibles en hojas de cacao mediante imagenes.
       </Text>
 
       <View style={styles.block}>
@@ -96,3 +95,4 @@ const styles = StyleSheet.create({
     lineHeight: 22
   }
 });
+

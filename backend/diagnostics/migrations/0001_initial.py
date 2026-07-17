@@ -1,4 +1,4 @@
-# Generated manually for the entregable prototype.
+﻿# Generated manually for the initial Cacao Leaf schema.
 
 from django.db import migrations, models
 
@@ -32,3 +32,4 @@ class Migration(migrations.Migration):
             },
         ),
     ]
+

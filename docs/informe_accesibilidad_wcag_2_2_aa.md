@@ -1,4 +1,4 @@
-# Informe tecnico de accesibilidad WCAG 2.2 AA
+﻿# Informe tecnico de accesibilidad WCAG 2.2 AA
 
 Proyecto evaluado: **Cacao Leaf**  
 Fecha de evaluacion: **10 de julio de 2026**  
@@ -7,7 +7,7 @@ Tipo de evaluacion: revision de codigo, contraste calculado y verificacion funci
 
 ## 1. Descripcion del proyecto
 
-Cacao Leaf es un prototipo academico para realizar una clasificacion preliminar de hojas de cacao a partir de imagenes. La aplicacion permite seleccionar o tomar una fotografia, enviarla al backend, recibir una clasificacion preliminar, consultar historial y revisar informacion de uso y limitaciones.
+Cacao Leaf es una plataforma para realizar una clasificacion preliminar de hojas de cacao a partir de imagenes. La aplicacion permite seleccionar o tomar una fotografia, enviarla al backend, recibir una clasificacion preliminar, consultar historial y revisar informacion de uso y limitaciones.
 
 Tecnologias identificadas:
 
@@ -30,7 +30,7 @@ Pantallas evaluadas:
 
 ### Objetivo
 
-Determinar el grado de conformidad del prototipo con WCAG 2.2 nivel AA, identificar barreras de accesibilidad y aplicar correcciones directas en el codigo cuando no alteren la funcionalidad principal ni el diseno visual.
+Determinar el grado de conformidad del producto con WCAG 2.2 nivel AA, identificar barreras de accesibilidad y aplicar correcciones directas en el codigo cuando no alteren la funcionalidad principal ni el diseno visual.
 
 ### Alcance
 
@@ -119,7 +119,7 @@ Resultado: **Cumple parcialmente**.
 
 ### Etiquetas accesibles en botones, iconos, imagenes y campos
 
-Se agregaron etiquetas e indicaciones accesibles en botones reutilizables, pestañas, filas de historial, imagen seleccionada, miniaturas, imagen ampliada, botones de cierre y controles principales.
+Se agregaron etiquetas e indicaciones accesibles en botones reutilizables, pestaÃ±as, filas de historial, imagen seleccionada, miniaturas, imagen ampliada, botones de cierre y controles principales.
 
 Ejemplos:
 
@@ -156,7 +156,7 @@ Resultado: **Cumple**.
 
 ### Tamano minimo de areas tactiles
 
-Los botones principales tienen `minHeight: 48`; las pestañas miden 82 x 56; filas de historial tienen `minHeight: 96`. El boton de cierre del modal fue corregido de 42 x 42 a 44 x 44.
+Los botones principales tienen `minHeight: 48`; las pestaÃ±as miden 82 x 56; filas de historial tienen `minHeight: 96`. El boton de cierre del modal fue corregido de 42 x 42 a 44 x 44.
 
 Resultado: **Cumple**.
 
@@ -433,7 +433,7 @@ Verificaciones ejecutadas:
 
 ## 8. Evidencias y capturas requeridas
 
-Capturas recomendadas para anexar al trabajo academico:
+Capturas recomendadas para anexar a la validacion del producto:
 
 1. Pantalla Inicio en vertical: hero, boton "Analizar hoja" y pasos.
 2. Pantalla Analizar sin imagen: estado "Sin imagen seleccionada".
@@ -480,3 +480,4 @@ Pruebas que requieren ejecucion manual con TalkBack o VoiceOver:
 18. En Expo Web, repetir navegacion con Tab, Shift+Tab, Enter y Espacio.
 19. Aumentar el tamano de fuente del sistema al 200% y revisar que no haya texto cortado ni superpuesto.
 20. Rotar el dispositivo a horizontal y revisar que las pantallas principales sigan utilizables.
+

@@ -1,172 +1,159 @@
-# Cacao Leaf
+﻿# Cacao Leaf
 
-Solucion prototipo basada en el documento `AVILA e INGA (3).pdf`.
+Cacao Leaf es una plataforma web y movil para el analisis preliminar de hojas de cacao mediante imagenes. Permite capturar o cargar una fotografia, procesarla en una API propia y obtener una clasificacion inicial con nivel de confianza, observaciones y recomendaciones de seguimiento.
 
-Tema: deteccion y clasificacion preliminar de patologias visibles en hojas de cacao mediante imagenes.
+El producto esta orientado a productores, tecnicos de campo y equipos agricolas que necesitan registrar evidencias visuales y priorizar revisiones tempranas de posibles patologias visibles en hojas de cacao.
 
-Tecnologias del Grupo 4:
+## Autores
 
-- Backend: Django + Django REST Framework.
-- Frontend: React Native + Expo.
-- Base de datos local: SQLite.
-- Procesamiento de imagen: clasificador prototipo en Python con Pillow.
-
-## Estructura
-
-```text
-backend/
-  cacao_api/        Configuracion principal de Django
-  diagnostics/      API, modelo de datos y clasificador de hojas
-mobile/
-  src/api/          Cliente HTTP para consumir Django
-  src/screens/      Pantallas Inicio, Analizar, Historial e Info
-docs/
-  arquitectura.md   Descripcion del flujo y endpoints
-  prototipo-figma.html Maquetas visuales tipo Figma para exposicion
-```
+- Bryan Avila Jara
+- Job Inga
 
 ## Funcionalidades
 
-- Cargar imagen de una hoja de cacao desde la app movil.
-- Enviar la imagen al backend Django.
-- Procesar la imagen con un clasificador prototipo.
-- Clasificar la hoja como sana o con posible patologia visible.
-- Mostrar confianza, notas y recomendacion basica.
-- Consultar historial de analisis realizados.
-- Mostrar informacion de sintomas y limitaciones del prototipo.
+- Captura de imagen desde camara o galeria.
+- Procesamiento de imagen mediante backend Django REST.
+- Clasificacion preliminar como hoja aparentemente sana o posible patologia visible.
+- Resultado con porcentaje de confianza, notas y recomendacion.
+- Historial de analisis procesados.
+- Validacion de formato, tamano y contenido real de imagen.
+- Interfaz compatible con web, Android e iOS mediante Expo.
 
-## Ejecutar backend
+## Arquitectura
+
+```text
+mobile/
+  App Expo / React Native
+  Pantallas de inicio, analisis, historial e informacion
+
+backend/
+  API Django REST Framework
+  Validacion de imagenes
+  Clasificador de hoja de cacao
+  Persistencia de analisis
+
+docs/
+  Documentacion tecnica, arquitectura y accesibilidad
+```
+
+## Stack Tecnico
+
+- Frontend: React Native, Expo, TypeScript.
+- Backend: Django, Django REST Framework.
+- Procesamiento de imagen: Pillow, NumPy, scikit-learn, h5py.
+- Base de datos por defecto: SQLite.
+- Despliegue backend: Render.
+- Despliegue web recomendado: Netlify o Render Static Site.
+
+## API
+
+Endpoints principales:
+
+- `GET /api/health/`
+- `GET /api/analyses/`
+- `POST /api/analyses/` con campo multipart `image`
+- `GET /api/analyses/{id}/`
+- `DELETE /api/analyses/clear/`
+
+Ejemplo de respuesta:
+
+```json
+{
+  "id": 1,
+  "image_url": "https://cacao-leaf-api.onrender.com/media/leaf_uploads/leaf.jpg",
+  "status": "healthy",
+  "status_display": "Hoja sana",
+  "confidence": "88.50",
+  "disease_label": "Hoja aparentemente sana",
+  "recommendation": "Mantener monitoreo preventivo...",
+  "notes": "No se observan senales visuales relevantes en la imagen analizada.",
+  "created_at": "2026-07-17T14:00:00Z"
+}
+```
+
+## Ejecucion Local
+
+Backend:
 
 ```powershell
 cd backend
 py -m venv .venv
 .\.venv\Scripts\Activate.ps1
 pip install -r requirements.txt
-python manage.py makemigrations
 python manage.py migrate
 python manage.py runserver 0.0.0.0:8000
 ```
 
-Si `py` no esta disponible, instala Python 3.11 o superior y usa `python` en los mismos comandos.
-
-Si el entorno virtual ya existe, puedes entrar directo:
-
-```powershell
-cd D:\xampp\htdocs\cacao-leaf\backend
-.\.venv\Scripts\Activate.ps1
-python manage.py migrate
-python manage.py runserver 0.0.0.0:8000
-```
-
-## Ejecutar app Expo
+Frontend:
 
 ```powershell
 cd mobile
 npm install
-npm run start
+$env:EXPO_PUBLIC_API_URL="http://127.0.0.1:8000"
+npm run web
 ```
 
-Para probar desde un celular fisico, configura la URL del backend con la IP de tu PC:
+Para dispositivo fisico en red local, usar la IP del equipo donde corre el backend:
 
 ```powershell
 $env:EXPO_PUBLIC_API_URL="http://TU_IP_LOCAL:8000"
 npm run start
 ```
 
-En emulador Android se usa `http://10.0.2.2:8000` por defecto. En web o iOS local se usa `http://127.0.0.1:8000`.
+## Despliegue
 
-Para probar rapido en navegador:
+El backend incluye configuracion para Render en `render.yaml`.
 
-```powershell
-cd D:\xampp\htdocs\cacao-leaf\mobile
-$env:EXPO_PUBLIC_API_URL="http://127.0.0.1:8000"
-npm run web
+```text
+Servicio: cacao-leaf-api
+Root directory: backend
+Build command: pip install -r requirements.txt && python manage.py migrate
+Start command: gunicorn cacao_api.wsgi:application --bind 0.0.0.0:$PORT
 ```
 
-## Pruebas
+Para publicar la app web, construir Expo apuntando al backend desplegado:
+
+```powershell
+cd mobile
+$env:EXPO_PUBLIC_API_URL="https://cacao-leaf-api.onrender.com"
+npm run build:web
+```
+
+El resultado puede publicarse como sitio estatico en Netlify o Render Static Site.
+
+## Modelo de Clasificacion
+
+El backend intenta usar el modelo entrenado en:
+
+```text
+backend/diagnostics/ml/models/cacao_leaf_model.h5
+```
+
+Si el modelo no esta disponible, el sistema conserva un clasificador deterministico de respaldo basado en caracteristicas visuales de la imagen. La salida mantiene el mismo contrato de API para que el modelo pueda evolucionar sin cambiar la app cliente.
+
+Dataset de referencia:
+
+- CocoaSwolSet, Mendeley Data, DOI `10.17632/hvwth9dsfd.2`.
+- Licencia: CC BY 4.0.
+
+## Verificacion
 
 Backend:
 
 ```powershell
-cd D:\xampp\htdocs\cacao-leaf\backend
+cd backend
 .\.venv\Scripts\Activate.ps1
+python manage.py check
 python manage.py test
 ```
 
 Frontend:
 
 ```powershell
-cd D:\xampp\htdocs\cacao-leaf\mobile
+cd mobile
 npm run typecheck
 ```
 
-Pruebas funcionales para la exposicion:
+## Aviso
 
-- `PF01`: abrir `http://127.0.0.1:8000/api/health/` y verificar `status: ok`.
-- `PF02`: desde la app, seleccionar una imagen valida de hoja y procesarla.
-- `PF03`: intentar enviar un archivo no valido desde API/clientes de prueba y confirmar error comprensible.
-- `PF04`: apagar el backend y presionar Procesar; la app debe mostrar error de conexion/procesamiento.
-- `PF05`: abrir Historial y verificar que aparezcan los analisis registrados.
-- `PF06`: revisar que el resultado diga clasificacion preliminar y no diagnostico definitivo.
-
-## Endpoints principales
-
-- `GET /api/health/`
-- `GET /api/analyses/`
-- `POST /api/analyses/` con campo multipart `image`
-- `GET /api/analyses/{id}/`
-
-## Nota tecnica
-
-El clasificador actual es un prototipo deterministico basado en color de la imagen. Esta disenado para cumplir el flujo funcional del entregable y puede reemplazarse luego por un modelo real de deep learning sin cambiar la app movil.
-
-## Evolucion IA preparada
-
-Se agrego y conecto la estructura `backend/diagnostics/ml/`:
-
-```text
-backend/diagnostics/ml/
-  config.py
-  preprocessing.py
-  model_loader.py
-  inference.py
-  train.py
-  metrics.py
-  dataset/train/
-  dataset/val/
-  dataset/test/
-  models/
-```
-
-Dataset usado:
-
-- CocoaSwolSet, Mendeley Data, DOI `10.17632/hvwth9dsfd.2`.
-- Licencia: CC BY 4.0.
-- Para esta primera prueba se usaron solo imagenes de hojas, separadas en `healthy` y `pathology`.
-
-Modelo entrenado:
-
-- Archivo: `backend/diagnostics/ml/models/cacao_leaf_model.h5`.
-- Tipo: modelo ML de regresion logistica con caracteristicas de color/histograma de imagen.
-- Resultado de la corrida actual: `accuracy test = 0.8638` sobre 213 imagenes de prueba.
-
-Comandos para repetir el proceso:
-
-```powershell
-cd D:\xampp\htdocs\cacao-leaf\backend
-.\.venv\Scripts\Activate.ps1
-pip install -r requirements.txt
-python -m diagnostics.ml.prepare_dataset --zip diagnostics\ml\cocoaswolset.zip --max-per-class 800
-python -m diagnostics.ml.train
-```
-
-El backend ya intenta usar primero el modelo entrenado. Si `cacao_leaf_model.h5` no existe, vuelve automaticamente al clasificador por color.
-
-## Guion breve de presentacion
-
-1. Explicar el problema: apoyo preliminar para detectar sintomas visibles en hojas de cacao.
-2. Mostrar la arquitectura: app Expo, API Django REST Framework, SQLite y clasificador.
-3. Aclarar el alcance: el clasificador actual es por color y valida el flujo completo, no es una CNN entrenada.
-4. Hacer demo: backend activo, app web/movil, seleccionar imagen, procesar y revisar historial.
-5. Mostrar la evolucion semanal: validaciones, pruebas backend, contrato JSON estable, dataset CocoaSwolSet y modelo `.h5` conectado.
-6. Cerrar con la siguiente fase: ampliar dataset, entrenar con mas imagenes o con CNN/transfer learning y comparar metricas.
+Cacao Leaf entrega una clasificacion preliminar basada en imagenes. No reemplaza el diagnostico profesional de un especialista agricola ni debe utilizarse como unica base para aplicar tratamientos.

@@ -1,4 +1,4 @@
-# Arquitectura del Prototipo
+﻿# Arquitectura de Cacao Leaf
 
 ## Flujo funcional
 
@@ -23,16 +23,16 @@ El backend esta organizado como API REST:
 
 Pantallas implementadas:
 
-- Inicio: presenta el objetivo del prototipo.
+- Inicio: presenta el objetivo del producto.
 - Analizar: selecciona imagen, envia al backend y muestra resultado.
 - Historial: lista analisis guardados.
 - Info: resume sintomas visibles y limitaciones.
 
-## Reemplazo por Modelo Real
+## Evolucion del Modelo
 
 Para integrar IA entrenada:
 
-1. Colocar el modelo en `backend/diagnostics/model/`.
+1. Colocar el modelo en `backend/diagnostics/ml/models/`.
 2. Cargarlo una vez en `classifier.py`.
 3. Reemplazar la heuristica por inferencia real.
 4. Mantener la salida `ClassificationResult` para no modificar la API ni la app.
@@ -52,3 +52,4 @@ Para integrar IA entrenada:
   "created_at": "2026-05-15T21:00:00Z"
 }
 ```
+
