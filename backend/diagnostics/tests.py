@@ -77,6 +77,17 @@ class LeafAnalysisApiTests(TestCase):
         self.assertEqual(response.data["status"], "healthy")
         self.assertIn("preliminar", response.data["recommendation"].lower() + response.data["notes"].lower())
 
+    def test_non_vegetation_image_is_rejected(self):
+        response = self.client.post(
+            "/api/analyses/",
+            {"image": self._image_file((45, 55, 75))},
+            format="multipart",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(LeafAnalysis.objects.count(), 0)
+        self.assertIn("vegetacion", str(response.data["image"]).lower())
+
     def test_invalid_file_is_rejected_with_clear_error(self):
         invalid = SimpleUploadedFile("leaf.txt", b"no es una imagen", content_type="text/plain")
 
