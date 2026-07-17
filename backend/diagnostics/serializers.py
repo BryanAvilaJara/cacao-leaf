@@ -94,11 +94,12 @@ def looks_like_vegetation(image: Image.Image) -> bool:
         return False
 
     stat = ImageStat.Stat(rgb_image)
-    red, green, blue = stat.mean
-    brightness = (red + green + blue) / 3
+    red_mean, green_mean, blue_mean = stat.mean
+    brightness = (red_mean + green_mean + blue_mean) / 3
 
     green_pixels = 0
-    natural_pixels = 0
+    earthy_pixels = 0
+    artificial_pixels = 0
     very_bright_pixels = 0
     very_dark_pixels = 0
 
@@ -113,28 +114,52 @@ def looks_like_vegetation(image: Image.Image) -> bool:
         if pixel_brightness <= 25:
             very_dark_pixels += 1
 
-        green_signal = green >= 55 and green >= red * 0.85 and green >= blue * 0.85
-        brown_yellow_signal = red >= 55 and green >= 35 and blue <= max(red, green) * 0.82
-        earthy_signal = red >= blue + 12 and green >= blue + 6 and saturation >= 18
+        green_signal = green >= 50 and green >= red * 0.92 and green >= blue * 0.92 and saturation >= 18 and pixel_brightness <= 225
+        earthy_signal = (
+            red >= 45
+            and green >= 32
+            and blue <= 95
+            and red >= blue + 18
+            and green >= blue + 10
+            and abs(red - green) <= 85
+            and saturation >= 16
+        )
+        artificial_signal = (
+            blue >= 115 and blue >= red + 28 and blue >= green + 20
+        ) or (
+            red >= 145 and red >= green + 55 and red >= blue + 45
+        ) or (
+            max_channel >= 185 and saturation >= 95 and not green_signal and not earthy_signal
+        )
 
         if green_signal:
             green_pixels += 1
-        if green_signal or brown_yellow_signal or earthy_signal:
-            natural_pixels += 1
+        if earthy_signal:
+            earthy_pixels += 1
+        if artificial_signal:
+            artificial_pixels += 1
 
     total = len(pixels)
     green_ratio = green_pixels / total
-    natural_ratio = natural_pixels / total
+    earthy_ratio = earthy_pixels / total
+    vegetation_ratio = green_ratio + earthy_ratio
+    artificial_ratio = artificial_pixels / total
     very_bright_ratio = very_bright_pixels / total
     very_dark_ratio = very_dark_pixels / total
 
-    if very_bright_ratio > 0.78 or very_dark_ratio > 0.82:
+    if very_bright_ratio > 0.72 or very_dark_ratio > 0.82:
         return False
 
-    if green_ratio >= 0.08:
+    if artificial_ratio > 0.30 and green_ratio < 0.10:
+        return False
+
+    if blue_mean > green_mean + 22 and green_ratio < 0.12:
+        return False
+
+    if green_ratio >= 0.05 and vegetation_ratio >= 0.10:
         return True
 
-    if natural_ratio >= 0.18 and 35 <= brightness <= 220:
+    if earthy_ratio >= 0.35 and artificial_ratio < 0.10 and blue_mean <= 110 and 30 <= brightness <= 215:
         return True
 
     return False
