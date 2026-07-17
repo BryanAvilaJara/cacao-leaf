@@ -12,6 +12,8 @@ export type AnalysisResult = {
   created_at: string;
 };
 
+const PRODUCTION_API_URL = "https://cacao-leaf-api.onrender.com";
+
 const localHost = Platform.select({
   android: "http://10.0.2.2:8000",
   default: "http://127.0.0.1:8000"
@@ -20,7 +22,19 @@ const localHost = Platform.select({
 const configuredBaseUrl = (globalThis as { process?: { env?: Record<string, string | undefined> } }).process
   ?.env?.EXPO_PUBLIC_API_URL;
 
-export const API_BASE_URL = configuredBaseUrl || localHost || "http://127.0.0.1:8000";
+function getDefaultBaseUrl() {
+  if (Platform.OS !== "web") {
+    return localHost || "http://127.0.0.1:8000";
+  }
+
+  const location = (globalThis as { location?: Location }).location;
+  const host = location?.hostname || "";
+  const isLocalWeb = host === "localhost" || host === "127.0.0.1" || host === "";
+
+  return isLocalWeb ? "http://127.0.0.1:8000" : PRODUCTION_API_URL;
+}
+
+export const API_BASE_URL = configuredBaseUrl || getDefaultBaseUrl();
 
 async function getErrorMessage(response: Response, fallback: string): Promise<string> {
   try {
