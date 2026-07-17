@@ -8,7 +8,7 @@ from PIL import Image
 from rest_framework import status
 from rest_framework.test import APIClient
 
-from .models import LeafAnalysis
+from .models import FeedbackReport, LeafAnalysis
 from .classifier import classify_cacao_leaf
 
 
@@ -108,6 +108,23 @@ class LeafAnalysisApiTests(TestCase):
         self.assertEqual(LeafAnalysis.objects.count(), 0)
         self.assertIn("image", response.data)
 
+    def test_feedback_report_is_saved_for_analysis(self):
+        with patch("diagnostics.classifier.predict_with_trained_model", return_value=None):
+            create_response = self.client.post(
+                "/api/analyses/",
+                {"image": self._image_file((30, 145, 60))},
+                format="multipart",
+            )
+
+        response = self.client.post(
+            f"/api/analyses/{create_response.data['id']}/feedback/",
+            {"reason": "wrong_result", "comment": "La clasificacion no coincide."},
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(FeedbackReport.objects.count(), 1)
+        self.assertEqual(response.data["reason"], "wrong_result")
     def test_list_analyses_returns_created_items(self):
         with patch("diagnostics.classifier.predict_with_trained_model", return_value=None):
             self.client.post(

@@ -3,7 +3,7 @@ from rest_framework.decorators import action, api_view
 from rest_framework.response import Response
 
 from .models import LeafAnalysis
-from .serializers import LeafAnalysisSerializer
+from .serializers import FeedbackReportSerializer, LeafAnalysisSerializer
 
 
 @api_view(["GET"])
@@ -25,6 +25,15 @@ class LeafAnalysisViewSet(
         serializer.is_valid(raise_exception=True)
         analysis = serializer.save()
         output = self.get_serializer(analysis)
+        return Response(output.data, status=status.HTTP_201_CREATED)
+
+    @action(detail=True, methods=["post"])
+    def feedback(self, request, pk=None):
+        analysis = self.get_object()
+        serializer = FeedbackReportSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        report = serializer.save(analysis=analysis)
+        output = FeedbackReportSerializer(report)
         return Response(output.data, status=status.HTTP_201_CREATED)
 
     @action(detail=False, methods=["delete"])

@@ -96,3 +96,19 @@ export async function clearAnalyses(): Promise<void> {
     throw new Error("No se pudo limpiar el historial.");
   }
 }
+export type FeedbackReason = "not_leaf" | "wrong_result" | "poor_image" | "other";
+
+export async function submitFeedback(analysisId: number, reason: FeedbackReason, comment: string): Promise<void> {
+  const response = await fetch(`${API_BASE_URL}/api/analyses/${analysisId}/feedback/`, {
+    method: "POST",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ reason, comment })
+  });
+
+  if (!response.ok) {
+    throw new Error("No se pudo enviar el reporte.");
+  }
+}

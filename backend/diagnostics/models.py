@@ -23,3 +23,28 @@ class LeafAnalysis(models.Model):
 
     def __str__(self):
         return f"{self.get_status_display()} - {self.confidence}%"
+
+
+class FeedbackReport(models.Model):
+    REASON_NOT_LEAF = "not_leaf"
+    REASON_WRONG_RESULT = "wrong_result"
+    REASON_POOR_IMAGE = "poor_image"
+    REASON_OTHER = "other"
+
+    REASON_CHOICES = [
+        (REASON_NOT_LEAF, "No era una hoja"),
+        (REASON_WRONG_RESULT, "El resultado parece incorrecto"),
+        (REASON_POOR_IMAGE, "La imagen era poco clara"),
+        (REASON_OTHER, "Otro"),
+    ]
+
+    analysis = models.ForeignKey(LeafAnalysis, related_name="feedback_reports", on_delete=models.CASCADE)
+    reason = models.CharField(max_length=30, choices=REASON_CHOICES)
+    comment = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return f"{self.get_reason_display()} - analysis {self.analysis_id}"
